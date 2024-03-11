@@ -5,6 +5,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from api.models import User, db
 from flask_mail import Mail, Message
 
+import os
+import app
 
 auth = Blueprint('auth', __name__)
 mail = Mail()
