@@ -13,7 +13,7 @@ from api.commands import setup_commands
 from api.models import db
 
 from authentication.admin import setup_admin
-from authentication.auth import auth_blueprint
+from authentication.auth import auth
 
 
 ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
@@ -58,6 +58,7 @@ setup_commands(app)
 # Add all endpoints form the API with a "api" prefix
 app.register_blueprint(api, url_prefix='/api')
 
+app.register_blueprint(auth, url_prefix='/auth')
 # Handle/serialize errors like a JSON object
 
 
