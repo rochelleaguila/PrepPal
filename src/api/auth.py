@@ -6,14 +6,9 @@ from api.models import User, db
 from flask_mail import Mail, Message
 
 import os
-import app
 
 auth = Blueprint('auth', __name__)
 mail = Mail()
-
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default_s')
-app.config['SECURITY_PASSWORD_SALT'] = os.getenv('SECURITY_PASSWORD_SALT', 'default_password_salt')
-app.config['MAIL_DEFAULT_SENDER'] = 'preppalpwrecovery@gmail.com'
 
 
 @auth.route('/login', methods=['POST'])
@@ -48,7 +43,7 @@ def register():
 
     return jsonify({"msg": "User successfully registered"}), 201
 
-s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+s = URLSafeTimedSerializer(os.getenv('SECRET_KEY', 'default_s'))
 
 @auth.route('/recover_password', methods=['POST'])
 def recover_password():
@@ -57,7 +52,7 @@ def recover_password():
     if not user:
         return jsonify({"msg": "Email not found"}), 404
 
-    token = s.dumps(email, salt=app.config['SECURITY_PASSWORD_SALT'])
+    token = s.dumps(email, salt=os.getenv('SECURITY_PASSWORD_SALT', 'default_password_salt'))
     recovery_url = f'https://yourfrontenddomain.com/reset_password/{token}'
 
     msg = Message("Password Reset", recipients=[email])
