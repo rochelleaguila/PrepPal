@@ -3,14 +3,20 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ScrollToTop from "./component/scrollToTop";
 import { BackendURL } from "./component/backendURL";
 
-import { Home } from "./pages/Home.jsx";
-import Secret from "./pages/Secret.jsx";
+import Home from "./pages/Home/index.jsx";
+import Login from "./pages/Login/index.jsx";
+// import Register from "./pages/Register/index.jsx"; // This needs to have the right file dropped in
+// import ForgetPassword from "./pages/ForgetPassword/index.jsx"; // This needs to have the right file dropped in
+import PersonalizedRecipe from "./pages/PersonalizedRecipe/index.jsx";
+import RecipeGenerator from "./pages/RecipeGenerator/index.jsx";
+import UserDashboard from "./pages/UserDashboard/index.jsx";
+import Settings from "./pages/Settings/index.jsx";
+// import Error from "./pages/Error/index.jsx";
 
 import injectContext from "./store/appContext";
 
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
-import AuthPage from "./component/AuthPage.jsx";
 
 //create your first component
 const Layout = () => {
@@ -27,16 +33,15 @@ const Layout = () => {
         <ScrollToTop>
           <Navbar />
           <Routes>
-            <Route element={<Home />} path="/" />
-            <Route
-              element={
-                <AuthPage>
-                  <Secret />
-                </AuthPage>
-              }
-              path="/secret"
-            />
-            <Route element={<h1>Not found!</h1>} />
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            {/* <Route path="/register" element={<Register />} /> */}
+            {/* <Route path="/forget-password" element={<ForgetPassword />} /> */}
+            <Route path="/personalized-recipe" element={<PersonalizedRecipe />} />
+            <Route path="/recipe-generator" element={<RecipeGenerator />} />
+            <Route path="/user-dashboard" element={<UserDashboard />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route element={<h1>Oops!</h1>} /> {/* Error page goes here. */}
           </Routes>
           <Footer />
         </ScrollToTop>
