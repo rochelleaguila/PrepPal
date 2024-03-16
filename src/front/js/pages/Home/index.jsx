@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Banner from "../../component/Banner/index.jsx";
 import "./home.scss";
 
@@ -146,9 +146,11 @@ const Home = () => {
                           <h5>
                             <a href="#"> Customizable Preferences </a>
                           </h5>
-                          <p>Allow users to customize their recipe preferences
-                              based on dietary restrictions, allergies,
-                              preferred cuisines, and cooking skill level.</p>
+                          <p>
+                            Allow users to customize their recipe preferences
+                            based on dietary restrictions, allergies, preferred
+                            cuisines, and cooking skill level.
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -169,9 +171,11 @@ const Home = () => {
                           <h5>
                             <a href="#"> Ingredient Substitution </a>
                           </h5>
-                          <p>Provide the ability for users to substitute
-                              ingredients in generated recipes based on what
-                              they have available or their dietary preferences.</p>
+                          <p>
+                            Provide the ability for users to substitute
+                            ingredients in generated recipes based on what they
+                            have available or their dietary preferences.
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -193,9 +197,11 @@ const Home = () => {
                           <h5>
                             <a href="#"> Recipe Rating and Reviews </a>
                           </h5>
-                          <p>Allow users to rate and review recipes they've
-                              tried, providing valuable feedback to the
-                              community and helping others decide.</p>
+                          <p>
+                            Allow users to rate and review recipes they've
+                            tried, providing valuable feedback to the community
+                            and helping others decide.
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -217,9 +223,11 @@ const Home = () => {
                           <h5>
                             <a href="#">Personalized Recipes </a>
                           </h5>
-                          <p>Utilize machine learning algorithms to provide
-                              personalized recipe recommendations based on
-                              users' past recipe selections.</p>
+                          <p>
+                            Utilize machine learning algorithms to provide
+                            personalized recipe recommendations based on users'
+                            past recipe selections.
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -228,11 +236,12 @@ const Home = () => {
               </div>
             </div>
 
-
             <div className="col-lg-12 pt-5">
               <div className="text-center">
                 <h2>Lets Get Started</h2>
-                <a href="/register" className="metro_btn-custom">Sign Up</a>
+                <a href="/register" className="metro_btn-custom">
+                  Sign Up
+                </a>
               </div>
             </div>
           </div>

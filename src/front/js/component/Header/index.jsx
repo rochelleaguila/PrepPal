@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./header.scss";
 import { Link } from "react-router-dom";
+import LightLogo from "../../../../../public/assets/img/logo-light.png";
+import Logo from "../../../../../public/assets/img/logo.png";
 
 const Header = () => {
   const [appearance, setAppearance] = useState("");
@@ -51,12 +53,8 @@ const Header = () => {
     <>
       <aside className="metro_aside metro_aside-left">
         <Link className="navbar-brand" to="/">
-          <img
-            className="logo-light"
-            src="assets/img/logo-light.png"
-            alt="logo"
-          />
-          <img className="logo-dark" src="assets/img/logo.png" alt="logo" />
+          <img className="logo-light" src={LightLogo} alt="logo" />
+          <img className="logo-dark" src={Logo} alt="logo" />
         </Link>
       </aside>
       <div className="metro_aside-overlay aside-trigger-left" />
@@ -65,11 +63,11 @@ const Header = () => {
           <div className="container">
             <nav className="navbar">
               <Link className="navbar-brand logo-light" to="/">
-                <img src="assets/img/logo-light.png" alt="logo" />
+                <img src="/assets/img/logo-light.png" alt="logo" />
                 <h4 className="d-inline-block">PrePal</h4>
               </Link>
               <Link className="navbar-brand logo-dark" to="/">
-                <img src="assets/img/logo.png" alt="logo" />
+                <img src="/assets/img/logo.png" alt="logo" />
                 <h4 className="d-inline-block">PrePal</h4>
               </Link>
 
@@ -98,40 +96,38 @@ const Header = () => {
                     </Link>
                   </>
                 ) : (
-                  <>
-                    <div className="dropdown">
-                      <i
-                        className="far fa-user-circle"
-                        id="dropdownMenuButton"
-                        data-toggle="dropdown"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                      ></i>
-                      <div
-                        className="dropdown-menu"
-                        aria-labelledby="dropdownMenuButton"
-                      >
-                        <Link className="dropdown-item" to="#">
-                          <i className="fas fa-user"></i>
-                          Username
-                        </Link>
-                        <hr />
-                        <Link className="dropdown-item" to="/user-dashboard">
-                          <i className="fas fa-tachometer-alt"></i>
-                          Dashboard
-                        </Link>
-                        <Link className="dropdown-item" to="/settings">
-                          <i className="fas fa-cog"></i>
-                          Settings
-                        </Link>
-                        <hr />
-                        <Link className="dropdown-item" to="#">
-                          <i className="fas fa-sign-out-alt"></i>
-                          Logout
-                        </Link>
-                      </div>
+                  <div className="dropdown">
+                    <i
+                      className="fa fa-user-circle"
+                      id="dropdownMenuButton"
+                      data-toggle="dropdown"
+                      aria-haspopup="true"
+                      aria-expanded="false"
+                    ></i>
+                    <div
+                      className="dropdown-menu"
+                      aria-labelledby="dropdownMenuButton"
+                    >
+                      <Link className="dropdown-item" to="#">
+                        <i className="fas fa-user"></i>
+                        Username
+                      </Link>
+                      <hr />
+                      <Link className="dropdown-item" to="/user-dashboard">
+                        <i className="fas fa-tachometer-alt"></i>
+                        Dashboard
+                      </Link>
+                      <Link className="dropdown-item" to="/settings">
+                        <i className="fas fa-cog"></i>
+                        Settings
+                      </Link>
+                      <hr />
+                      <Link className="dropdown-item" to="#">
+                        <i className="fas fa-sign-out-alt"></i>
+                        Logout
+                      </Link>
                     </div>
-                  </>
+                  </div>
                 )}
               </div>
             </nav>

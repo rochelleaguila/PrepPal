@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const Login = () => {
+const ForgetPassword = () => {
   return (
     <>
       <div className="container">
@@ -41,4 +41,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ForgetPassword;
