@@ -13,8 +13,8 @@ from api.routes import api
 from api.commands import setup_commands
 from api.models import db
 
-from authentication.admin import setup_admin
-from authentication.auth import auth
+from api.admin import setup_admin
+from api.auth import auth
 
 
 ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
@@ -23,6 +23,10 @@ static_file_dir = os.path.join(os.path.dirname(
 app = Flask(__name__)
 CORS(app)
 app.url_map.strict_slashes = False
+
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default_s')
+app.config['SECURITY_PASSWORD_SALT'] = os.getenv('SECURITY_PASSWORD_SALT', 'default_password_salt')
+app.config['MAIL_DEFAULT_SENDER'] = 'preppalpwrecovery@gmail.com'
 
 app.secret_key = os.getenv('FLASK_APP_KEY', 'magic_words')
 
