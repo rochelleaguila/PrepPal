@@ -6,6 +6,7 @@ from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from flask_swagger import swagger
+from flask_cors import CORS
 
 from api.utils import APIException, generate_sitemap
 from api.routes import api
@@ -20,6 +21,7 @@ ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
 static_file_dir = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), '../public/')
 app = Flask(__name__)
+CORS(app)
 app.url_map.strict_slashes = False
 
 app.secret_key = os.getenv('FLASK_APP_KEY', 'magic_words')
