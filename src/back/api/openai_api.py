@@ -7,6 +7,27 @@ load_dotenv()
 OPENAI_KEY = os.getenv('OPENAI_KEY')
 openai.api_key = OPENAI_KEY
 
+def generate_recipe_based_on_preferences(user_preferences, base_recipes_titles):
+    """
+    Generate a custom recipe using OpenAI's GPT-4, based on user preferences and a list of base recipe titles.
+    """
+    preferences_summary = " ".join([f"{key}: {value}" for key, value in user_preferences.items() if value])
+    base_recipes_str = ", ".join(base_recipes_titles)
+    prompt = f"Create a unique recipe considering the following preferences: {preferences_summary}. Use these recipes for inspiration: {base_recipes_str}."
+
+    response = openai.Completion.create(
+        engine="gpt-4",  # Adjust with the correct identifier for GPT-4
+        prompt=prompt,
+        temperature=0.7,
+        max_tokens=1024,
+        top_p=1.0,
+        frequency_penalty=0.5,
+        presence_penalty=0.0
+    )
+
+    return response.choices[0].text.strip()
+
+'''
 def generate_custom_recipe(base_recipes, user_preferences):
     """
     Generate a custom recipe based on base recipes and user preferences.
@@ -28,3 +49,4 @@ def generate_custom_recipe(base_recipes, user_preferences):
         presence_penalty=0.0
     )
     return response.choices[0].text.strip()
+'''
