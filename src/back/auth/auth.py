@@ -2,14 +2,19 @@ from flask import jsonify, request, Blueprint
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from werkzeug.security import check_password_hash, generate_password_hash
-from api.models import User, db
+from back.models.models import User, db
 from flask_mail import Mail, Message
 
 import os
+import re
 
 auth = Blueprint('auth', __name__)
 mail = Mail()
 
+#email validation function
+def is_valid_email(email):
+    regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+    return re.fullmatch(regex, email) is not None
 
 @auth.route('/login', methods=['POST'])
 def user_login():
@@ -19,7 +24,7 @@ def user_login():
     if user and check_password_hash(user.password_hash, password):
         access_token = create_access_token(identity=username)
         return jsonify(access_token=access_token), 200
-    return jsonify({"msg": "Bad username or password"}), 401
+    return jsonify({"msg": "Invalid username or password"}), 401
 
 @auth.route('/protected', methods=['GET'])
 @jwt_required()
@@ -32,7 +37,13 @@ def register():
     username = request.json.get('username', None)
     email = request.json.get('email', None)
     password = request.json.get('password', None)
+    confirm_password = request.json.get('confirm_password', None)
 
+    #Validation
+    if not is_valid_email(email):
+        return jsonify({"msg": "Invalid email format"}), 400
+    if password != confirm_password:
+        return jsonify({"msg": "Passwords do not match"}), 400
     if User.query.filter((User.username == username) | (User.email == email)).first():
         return jsonify({"msg": "Username or email already exists"}), 409
 

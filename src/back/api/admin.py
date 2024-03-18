@@ -1,7 +1,7 @@
 
 import os
 from flask_admin import Admin
-from api.models import db, User
+from back.models.models import db, User
 from flask_admin.contrib.sqla import ModelView
 
 class UserModelView(ModelView):

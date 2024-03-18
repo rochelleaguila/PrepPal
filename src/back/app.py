@@ -11,10 +11,10 @@ from flask_cors import CORS
 from api.utils import APIException, generate_sitemap
 from api.routes import api
 from api.commands import setup_commands
-from api.models import db
+from back.models.models import db
 
 from api.admin import setup_admin
-from api.auth import auth
+from back.auth.auth import auth
 
 
 ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
@@ -32,6 +32,8 @@ app.secret_key = os.getenv('FLASK_APP_KEY', 'magic_words')
 
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'secret_password')
 jwt = JWTManager(app)
+
+db.init_app(app)
 
 db_url = os.getenv("DATABASE_URL")
 
@@ -93,7 +95,7 @@ def serve_any_other_file(path):
     return response
 
 
-# this only runs if `$ python src/main.py` is executed
+# this only runs if `$ python src/back/app.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3001))
     app.run(host='0.0.0.0', port=PORT, debug=True)
