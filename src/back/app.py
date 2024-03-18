@@ -1,19 +1,21 @@
 from dotenv import load_dotenv
-load_dotenv()
-
 import os
+
+dotenv_path = os.path.join(os.path.dirname(__file__), '../../../.env')
+load_dotenv(dotenv_path)
+
 from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
 
-from api.utils import APIException, generate_sitemap
-from api.routes import api
-from api.commands import setup_commands
+from back.api.utils import APIException, generate_sitemap
+from back.api.routes import api
+from back.api.commands import setup_commands
 from back.models.models import db
 
-from api.admin import setup_admin
+from back.api.admin import setup_admin
 from back.auth.auth import auth
 
 
@@ -33,16 +35,15 @@ app.secret_key = os.getenv('FLASK_APP_KEY', 'magic_words')
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'secret_password')
 jwt = JWTManager(app)
 
-db.init_app(app)
-
 db_url = os.getenv("DATABASE_URL")
 
 # Set up database configuration directly for MySQL
 app.config['SQLALCHEMY_DATABASE_URI'] = db_url if db_url else "sqlite:////tmp/test.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Initialize extensions
+db.init_app(app)
 
+# Initialize extensions
 migrate = Migrate(app, db)
 
 '''
