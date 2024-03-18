@@ -9,6 +9,7 @@ from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
+from flask_mail import Mail
 
 from back.api.utils import APIException, generate_sitemap
 from back.api.routes import api
@@ -23,12 +24,24 @@ ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
 static_file_dir = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), '../public/')
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True, resources={r'/auth/*': {"origins": "*"}})
 app.url_map.strict_slashes = False
 
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default_s')
 app.config['SECURITY_PASSWORD_SALT'] = os.getenv('SECURITY_PASSWORD_SALT', 'default_password_salt')
-app.config['MAIL_DEFAULT_SENDER'] = 'preppalpwrecovery@gmail.com'
+
+
+# Flask-Mail configuration
+app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
+app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT'))
+app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS', 'false').lower() in ['true', '1', 't']
+app.config['MAIL_USE_SSL'] = os.getenv('MAIL_USE_SSL', 'false').lower() in ['true', '1', 't']
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER', os.getenv('MAIL_USERNAME'))
+
+
+mail = Mail(app)
 
 app.secret_key = os.getenv('FLASK_APP_KEY', 'magic_words')
 

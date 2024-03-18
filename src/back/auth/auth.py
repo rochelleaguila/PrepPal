@@ -64,7 +64,7 @@ def recover_password():
         return jsonify({"msg": "Email not found"}), 404
 
     token = s.dumps(email, salt=os.getenv('SECURITY_PASSWORD_SALT', 'default_password_salt'))
-    recovery_url = f'https://yourfrontenddomain.com/reset_password/{token}'
+    recovery_url = f'http://localhost:3000/reset-password/{token}' #Change to the actual URL later on when deploying
 
     msg = Message("Password Reset", recipients=[email])
     msg.body = f'Your password reset link is: {recovery_url}'
