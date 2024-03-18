@@ -69,7 +69,7 @@ const Login = () => {
                   />
                 </div>
                 <div className="form-group">
-                  <Link to="/forget-password">Forget Password?</Link>
+                  <Link to="/forget-password">Forgot Password?</Link>
                 </div>
                 <button type="submit" className="metro_btn-custom primary">
                   Login
