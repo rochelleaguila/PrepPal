@@ -1,7 +1,93 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  const navigate = useNavigate(); // For navigation after successful login
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    // Attempt to login
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.msg || "Failed to login");
+      }
+
+      // Handle successful login
+      console.log("Login successful:", data);
+      navigate("/user-dashboard"); // Redirect to a dashboard route
+    } catch (error) {
+      console.error("Login error:", error.message);
+    }
+  };
+
+  return (
+    <>
+      <div className="container">
+        <div className="row justify-content-center py-5 my-5">
+          <div className="col-md-7">
+            <div className="metro_comments-form p-0 border-0 justify-content-center">
+              <div className="row justify-content-center">
+                <Link to="/login" className="metro_btn-custom mx-2">
+                  Login
+                </Link>
+                <Link to="/register" className="metro_btn-custom non-active mx-2">
+                  Register
+                </Link>
+              </div>
+              <h4></h4>
+              <form className="form_validate ajax_submit form_alert" onSubmit={handleSubmit}>
+                <div className="form-group">
+                  <input
+                    type="text"
+                    placeholder="Username"
+                    className="form-control"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <input
+                    type="password"
+                    placeholder="Password (Must be 12 characters)"
+                    className="form-control"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <Link to="/forget-password">Forget Password?</Link>
+                </div>
+                <button type="submit" className="metro_btn-custom primary">
+                  Login
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default Login;
+
+/*
+const Login = () => {
+
   return (
     <>
       <div className="container">
@@ -62,3 +148,5 @@ const Login = () => {
 };
 
 export default Login;
+
+*/

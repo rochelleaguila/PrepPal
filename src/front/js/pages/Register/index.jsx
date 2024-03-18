@@ -14,6 +14,7 @@ const Register = () => {
   // Form submission handler
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (password !== confirmPassword) {
       alert("Passwords do not match!");
       return;
@@ -21,12 +22,12 @@ const Register = () => {
 
     // POST request
     try {
-      const response = await fetch('/auth/register', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ username, email, password, confirm_password: confirmPassword }),
       });
       if (!response.ok) {
         const errorData = await response.json();
@@ -34,7 +35,7 @@ const Register = () => {
       } else {
         // Handle successful registration
         alert("Registration successful!");
-        history.push('/login'); // Redirect to login page or another route as needed
+        navigate('/user-dashboard'); // Redirect to userdashboard after
       }
     } catch (error) {
       console.error("Registration error:", error);
@@ -65,7 +66,6 @@ const Register = () => {
                     name="username"
                     value={username}
                     onChange={e => setUsername(e.target.value)}
-                    style={{ color: 'white' }} // Inline style for white text
                   />
                 </div>
                 <div className="form-group">
@@ -76,18 +76,16 @@ const Register = () => {
                     name="email"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
-                    style={{ color: 'white' }}
                   />
                 </div>
                 <div className="form-group">
                   <input
                     type="password"
-                    placeholder="Password (Must be 12 characters)"
+                    placeholder="Password"
                     className="form-control"
                     name="password"
                     value={password}
                     onChange={e => setPassword(e.target.value)}
-                    style={{ color: 'white' }}
                   />
                 </div>
                 <div className="form-group">
@@ -98,7 +96,6 @@ const Register = () => {
                     name="confirmPassword"
                     value={confirmPassword}
                     onChange={e => setConfirmPassword(e.target.value)}
-                    style={{ color: 'white' }}
                   />
                 </div>
                 <button type="submit" className="metro_btn-custom primary">
