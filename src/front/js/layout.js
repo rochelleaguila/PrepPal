@@ -12,6 +12,7 @@ import RecipeGenerator from "./pages/RecipeGenerator/index.jsx";
 import UserDashboard from "./pages/UserDashboard/index.jsx";
 import Settings from "./pages/Settings/index.jsx";
 import ResetPassword from "./pages/ResetPassword/index.jsx";
+import Preference from "./component/Preference/index.jsx";
 // import Error from "./pages/Error/index.jsx";
 
 import injectContext from "./store/appContext";
@@ -47,6 +48,7 @@ const Layout = () => {
             <Route path="/settings" element={<Settings />} />
             <Route element={<h1>Oops!</h1>} /> {/* Error page goes here. */}
             <Route path="/reset-password/:token" element={<ResetPassword />} />
+            <Route path="/preference" element={<Preference />} />
           </Routes>
           <Footer />
         </ScrollToTop>

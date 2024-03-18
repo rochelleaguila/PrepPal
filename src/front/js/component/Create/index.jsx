@@ -1,7 +1,95 @@
+import React from "react";
+
+const Create = ({ onContentChange }) => {
+  return (
+    <>
+      <div id="top" className="container">
+        <div className="row py-5">
+          <div className="col-md-6">
+            <article className="metro_post metro_recipe">
+              <div className="metro_post-body">
+                <div className="metro_post-desc">
+                  <h5>Recipe Generator</h5>
+                  <p>Will create recipes based off profile preferences.</p>
+                  <button onClick={() => onContentChange('generate')} className="metro_btn-custom">
+                    Generate Recipe
+                  </button>
+                </div>
+              </div>
+            </article>
+          </div>
+          <div className="col-md-6">
+            <article className="metro_post metro_recipe">
+              <div className="metro_post-body">
+                <div className="metro_post-desc">
+                  <h5>Personalized AI</h5>
+                  <p>Will create recipes based off custom instructions.</p>
+                  <button onClick={() => onContentChange('personalized')} className="metro_btn-custom">
+                    Personalized AI
+                  </button>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default Create;
+
+
+
+
+/*
+import React from "react";
+import { Link } from "react-router-dom";
+
+const Create = () => {
+  return (
+    <>
+      <div id="top" className="container">
+        <div className="row py-5">
+          <div className="col-md-6">
+            <article className="metro_post metro_recipe">
+              <div className="metro_post-body">
+                <div className="metro_post-desc">
+                  <h5>Recipe Generator</h5>
+                  <p>Will create recipes based off profile preferences.</p>
+                  <Link to="/generate" className="metro_btn-custom">
+                    Generate Recipe
+                  </Link>
+                </div>
+              </div>
+            </article>
+          </div>
+          <div className="col-md-6">
+            <article className="metro_post metro_recipe">
+              <div className="metro_post-body">
+                <div className="metro_post-desc">
+                  <h5>Personalized AI</h5>
+                  <p>Will create recipes based off custom instructions.</p>
+                  <Link to="/preference" className="metro_btn-custom">
+                    Personalized AI
+                  </Link>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default Create;
+
 import React, { useState } from "react";
 import {Link} from "react-router-dom"
 
 const Create = (props) => {
+
   const [activeSection, setActiveSection] = useState("navigator");
 
   const handleGenerateClick = (section) => {
@@ -9,7 +97,7 @@ const Create = (props) => {
     if (top) {
       top.scrollIntoView({ behavior: "smooth" });
     }
-    setActiveSection(section);    
+    setActiveSection(section);
   };
 
 
@@ -278,7 +366,7 @@ const Create = (props) => {
                       <div className="entry-content">
                         <span className="metro_post-meta">
                           <a href="#">
-                            <i className="far fa-user" /> Michel
+                            <i className="far fa-user" /> Mich
                           </a>
                           <a href="#">
                             <i className="far fa-clock" /> 55 minutes
@@ -408,3 +496,4 @@ const Create = (props) => {
 };
 
 export default Create;
+*/

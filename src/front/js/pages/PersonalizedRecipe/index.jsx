@@ -23,7 +23,7 @@ const PersonalizedRecipe = () => {
                     <div className="entry-content">
                       <span className="metro_post-meta">
                         <a href="#">
-                          <i className="far fa-user" /> Michel
+                          <i className="far fa-user" /> Mic
                         </a>
                         <a href="#">
                           <i className="far fa-clock" /> 55 minutes

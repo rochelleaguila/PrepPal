@@ -19,8 +19,8 @@ const Preference = (props) => {
                     <label className="btn btn-danger btn-lg mr-3 active">
                       <input
                         type="radio"
-                        name="style"
-                        id="option1"
+                        name="dietStyle"
+                        id="omni"
                         autoComplete="off"
                         defaultChecked=""
                       />
@@ -29,8 +29,8 @@ const Preference = (props) => {
                     <label className="btn btn-danger btn-lg mr-3">
                       <input
                         type="radio"
-                        name="style"
-                        id="option2"
+                        name="dietStyle"
+                        id="carnivore"
                         autoComplete="off"
                       />
                       Carnivore
@@ -38,8 +38,8 @@ const Preference = (props) => {
                     <label className="btn btn-danger btn-lg mr-3">
                       <input
                         type="radio"
-                        name="style"
-                        id="option3"
+                        name="dietStyle"
+                        id="vegan"
                         autoComplete="off"
                       />
                       Vegan
@@ -47,8 +47,8 @@ const Preference = (props) => {
                     <label className="btn btn-danger btn-lg mr-3">
                       <input
                         type="radio"
-                        name="style"
-                        id="option2"
+                        name="dietStyle"
+                        id="Vegetarian"
                         autoComplete="off"
                       />
                       Vegetarian
@@ -56,8 +56,8 @@ const Preference = (props) => {
                     <label className="btn btn-danger btn-lg mr-3">
                       <input
                         type="radio"
-                        name="style"
-                        id="option3"
+                        name="dietStyle"
+                        id="keto"
                         autoComplete="off"
                       />
                       Keto
@@ -72,6 +72,18 @@ const Preference = (props) => {
                     name="style"
                   />
                 </div>
+                <hr />
+                <hr />
+                <h6>Serving Size</h6>
+                <div className="form-group">
+                  <select className="form-control" name="servingSize" id="servingSize">
+                    <option value="" disabled selected>Select Serving Size</option>
+                    {[...Array(20).keys()].map(number => (
+                    <option key={number + 1} value={number + 1}>{number + 1}</option>
+                    ))}
+                  </select>
+                </div>
+
                 <hr />
                 <h6>Macros (per serving)</h6>
                 <div className="form-group">
@@ -124,43 +136,43 @@ const Preference = (props) => {
                   </select>
                   <i className="far fa-arrow-down" />
                 </div>
-                <h6>Die Restrictions</h6>
+                <h6>Diet Restrictions</h6>
                 <div className="btn-group-toggle" data-toggle="buttons">
                   <label className="btn btn-danger btn-lg mr-3">
                     <input
                       type="radio"
-                      name="style"
-                      id="option2"
+                      name="restriction"
+                      id="gluten_free"
                       autoComplete="off"
                     />
-                    .........
+                    Gluten Free
                   </label>
                   <label className="btn btn-danger btn-lg mr-3">
                     <input
                       type="radio"
-                      name="style"
-                      id="option3"
+                      name="restriction"
+                      id="dairy_free"
                       autoComplete="off"
                     />
-                    .........
+                    Dairy Free
                   </label>
                   <label className="btn btn-danger btn-lg mr-3">
                     <input
                       type="radio"
-                      name="style"
-                      id="option2"
+                      name="restriction"
+                      id="nut_free"
                       autoComplete="off"
                     />
-                    .........
+                    Nut Free
                   </label>
                   <label className="btn btn-danger btn-lg mr-3">
                     <input
                       type="radio"
-                      name="style"
-                      id="option3"
+                      name="restriction"
+                      id="low_carb"
                       autoComplete="off"
                     />
-                    .........
+                    Low Carb
                   </label>
                   <div className="form-group mt-4">
                     <input

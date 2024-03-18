@@ -24,48 +24,48 @@ const RecipeGenerator = () => {
                     <label className="btn btn-danger btn-lg py-3 px-4 mr-3 active">
                       <input
                         type="radio"
-                        name="protein1"
-                        id="protein1"
+                        name="dietStyle"
+                        id="omni"
                         autoComplete="off"
                         defaultChecked=""
                       />
-                      ................
+                      Omni
                     </label>
                     <label className="btn btn-danger btn-lg py-3 px-4 mr-3">
                       <input
                         type="radio"
-                        name="protein1"
-                        id="protein2"
+                        name="dietStyle"
+                        id="carnivore"
                         autoComplete="off"
                       />
-                      ................
+                      Carnivore
                     </label>
                     <label className="btn btn-danger btn-lg py-3 px-4 mr-3">
                       <input
                         type="radio"
-                        name="protein1"
-                        id="protein3"
+                        name="dietStyle"
+                        id="vegan"
                         autoComplete="off"
                       />
-                      ................
+                      Vegan
                     </label>
                     <label className="btn btn-danger btn-lg py-3 px-4 mr-3">
                       <input
                         type="radio"
-                        name="protein1"
-                        id="protein4"
+                        name="dietStyle"
+                        id="vegetarian"
                         autoComplete="off"
                       />
-                      ................
+                      Vegetarian
                     </label>
                     <label className="btn btn-danger btn-lg py-3 px-4 mr-3">
                       <input
                         type="radio"
-                        name="protein1"
-                        id="protein5"
+                        name="dietStyle"
+                        id="keto"
                         autoComplete="off"
                       />
-                      ................
+                      Keto
                     </label>
                   </div>
                 </div>
