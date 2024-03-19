@@ -1,18 +1,68 @@
-import React, { useContext } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Breadcrumb from "../../component/Breadcrumb/index.jsx";
 import { Context } from "../../store/appContext.js"
 
 const PersonalizedRecipe = () => {
+  const { store, actions } = useContext(Context);
+  const navigate = useNavigate();
   const location = useLocation();
   const { recipe } = location.state;
-  const { store } = useContext(Context);
 
   const isLoggedIn = !!store.access_token;
+  const[userMenus, setUserMenus] = useState([]);
 
   /*console.log(location.state);
   //console.log(recipe);
   */
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      actions.fetchUserMenus().then(setUserMenus);
+    }
+  }, [isLoggedIn, actions]);
+
+  const handleSaveRecipe = () => {
+    if (!isLoggedIn) {
+      navigate('/login');
+      return;
+    }
+    // Implement saving recipe logic here for logged-in users
+    actions.saveRecipe(recipe);
+  };
+
+  const handleSaveToMenu = (menu_id) => {
+    actions.saveToMenu(recipe, menu_id);
+  }
+
+  const handleCreateNewMenu = () => {
+    actions.createNewMenu(recipe);
+  }
+
+  // Logic to render Save to Menu and Create New Menu options for logged-in users
+  const renderLoggedInOptions = () => {
+    if (!isLoggedIn) return null;
+
+    return (
+      <>
+        <div>
+          <button onClick={handleSaveRecipe} className="metro_btn-custom primary">
+            Save Recipe
+          </button>
+          {userMenus.map(menu => (
+            <button key={menu.menu_id} onClick={() => handleSaveToMenu(menu.menu_id)} className="metro_btn-custom">
+              Save to {menu.menu_name}
+            </button>
+          ))}
+          <button onClick={handleCreateNewMenu} className="metro_btn-custom primary">
+            Create New Menu
+          </button>
+        </div>
+      </>
+    );
+  };
+
+
 
   const renderMacrosList = () => {
     if (!recipe.macros) return null;
@@ -26,6 +76,7 @@ const PersonalizedRecipe = () => {
   const renderList = (text) => {
     if (!text) return null;
     return text.split('\n').map((item, index) => <li key={index}>{item.trim()}</li>);
+
   };
 
   return (
