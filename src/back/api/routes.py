@@ -2,15 +2,16 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
+from flask_cors import CORS
+
 from back.models.models import db, User
 from back.api.utils import generate_sitemap, APIException
-from flask_cors import CORS
+from back.database.database_functions import fetch_preferences
+from spoonacular_api import search_recipes_advanced
 
 api = Blueprint('api', __name__)
 
-# Allow CORS requests to this API
 CORS(api)
-
 
 @api.route('/hello', methods=['POST', 'GET'])
 def handle_hello():

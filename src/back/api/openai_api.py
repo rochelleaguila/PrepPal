@@ -7,6 +7,8 @@ load_dotenv()
 OPENAI_KEY = os.getenv('OPENAI_KEY')
 openai.api_key = OPENAI_KEY
 
+def basic_recipe_generation
+
 def generate_recipe_based_on_preferences(user_preferences, base_recipes_titles):
     """
     Generate a custom recipe using OpenAI's GPT-4, based on user preferences and a list of base recipe titles.
@@ -16,7 +18,7 @@ def generate_recipe_based_on_preferences(user_preferences, base_recipes_titles):
     prompt = f"Create a unique recipe considering the following preferences: {preferences_summary}. Use these recipes for inspiration: {base_recipes_str}."
 
     response = openai.Completion.create(
-        engine="gpt-4",  # Adjust with the correct identifier for GPT-4
+        engine="gpt-4",
         prompt=prompt,
         temperature=0.7,
         max_tokens=1024,
@@ -26,6 +28,19 @@ def generate_recipe_based_on_preferences(user_preferences, base_recipes_titles):
     )
 
     return response.choices[0].text.strip()
+
+def generate_image_from_recipe(recipe_description):
+    """
+    Generate an image based on a recipe description using OpenAI's DALL·E.
+    """
+    response = openai.Image.create(
+        engine="davinci-codex",  # Adjust with the correct identifier for DALL·E
+        prompt=recipe_description,
+        n=1,  # Number of images to generate
+        size="1024x1024"
+    )
+
+    return response.data[0].url
 
 '''
 def generate_custom_recipe(base_recipes, user_preferences):
