@@ -24,7 +24,16 @@ ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
 static_file_dir = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), '../public/')
 app = Flask(__name__)
-CORS(app, supports_credentials=True, resources={r'/auth/*': {"origins": "*"}})
+
+CORS(app, resources={r"/*": {"origins": "*"}})
+
+'''
+CORS(app, supports_credentials=True, resources={
+    r'/api/*': {"origins": "http://localhost:3000"},
+    r'/auth/*': {"origins": "http://localhost:3000"}
+})
+'''
+
 app.url_map.strict_slashes = False
 
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default_s')

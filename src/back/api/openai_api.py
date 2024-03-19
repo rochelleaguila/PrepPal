@@ -1,11 +1,16 @@
 import openai
+from openai import OpenAI
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
+dotenv_path = os.path.join(os.path.dirname(__file__), '../../../../../.env')
+load_dotenv(dotenv_path)
 
 OPENAI_KEY = os.getenv('OPENAI_KEY')
+
 openai.api_key = OPENAI_KEY
+
+#client = OpenAI()
 
 def parse_generated_recipe(recipe_text):
     # Define markers that indicate the start of each section
@@ -35,31 +40,20 @@ def parse_generated_recipe(recipe_text):
 
 
 def basic_recipe_generation(diet_style, cuisine, health_focus=None):
-    engine = "gpt-4"
     prompt = f"Create a brief summary, list of ingredients, cooking instructions, and macros for a {diet_style.lower()} recipe that has {cuisine.lower()} influences"
     if health_focus:
         prompt += f" and focuses on being {health_focus.lower()}."
-
     prompt += "\n\nSummary:\n\nIngredients:\n\nInstructions:\n\nMacros:\n- Calories: \n- Sugar in g: \n- Protein in g: \n- Fat in g: \n- Carbs in g:"
 
     try:
-        response = openai.Completion.create(
-            engine=engine,
-            prompt=prompt,
-            temperature=0.5,
-            max_tokens=500,
-            top_p=1.0,
-            frequency_penalty=0.0,
-            presence_penalty=0.0,
-            stop=["\n\n"]
+        response = openai.chat.completions.create(
+            model="gpt-4",
+            messages=[{"role": "system", "content": prompt}]
         )
-        recipe_text = response.choices[0].text.strip()
-        return recipe_text
+        return response.choices[0].message.content
     except Exception as e:
         print(f"Error in recipe generation: {e}")
         return "Could not generate a recipe at this time."
-
-
 
 def generate_custom_recipe(user_preferences, base_recipes_titles):
     """
@@ -73,7 +67,7 @@ def generate_custom_recipe(user_preferences, base_recipes_titles):
               f"considering the following preferences: {preferences_summary}. "
               f"Use inspiration from these recipes: {base_recipes_str}.")
 
-    response = openai.Completion.create(
+    response = openai.chat.completions.create(
         engine="gpt-4",  # Change to the latest GPT-4 engine once available
         prompt=prompt,
         temperature=0.7,
@@ -90,38 +84,14 @@ def generate_image_from_recipe(recipe_description):
     Generate an image based on a recipe description using OpenAI's DALL·E.
     """
     try:
-        response = openai.Image.create(
-            engine="dalle-e-3",
+        response = openai.images.generate(
+            model="dall-e-3",
             prompt=recipe_description,
             n=1,  # Number of images to generate
             size="1024x1024"
         )
 
-        return response["data"][0]["url"]
+        return response.data[0].url
     except Exception as e:
         print(f"Error generating image: {e}")
-        return None
-
-'''
-def generate_custom_recipe(base_recipes, user_preferences):
-    """
-    Generate a custom recipe based on base recipes and user preferences.
-
-    :param base_recipes: List of recipe titles or descriptions from Spoonacular.
-    :param user_preferences: User preferences including diet, intolerances, ingredients, and cuisine.
-    :return: A string containing the generated custom recipe.
-    """
-    preferences_summary = f"Dietary preference: {user_preferences['diet']}. Intolerances: {user_preferences['intolerances']}. Must include: {user_preferences['includeIngredients']}. Must exclude: {user_preferences['excludeIngredients']}. Cuisine: {user_preferences['cuisine']}."
-    prompt = f"Given these user preferences: {preferences_summary}. Generate a detailed recipe that fits these criteria, using inspiration from the following base recipes: {', '.join(base_recipes)}."
-
-    response = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt=prompt,
-        temperature=0.7,
-        max_tokens=1024,
-        top_p=1.0,
-        frequency_penalty=0.5,
-        presence_penalty=0.0
-    )
-    return response.choices[0].text.strip()
-'''
+        return "assets/img/empty.svg"

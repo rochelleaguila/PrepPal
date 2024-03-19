@@ -25,7 +25,7 @@ const PersonalizedRecipe = () => {
                 <div className="row">
                   <div className="col-md-4">
                     <div className="metro_post-single-thumb sticky-image">
-                      <img src={recipe.imageURL || "assets/img/empty.svg"} alt="Recipe" />
+                      <img src={recipe.image_url || "assets/img/empty.svg"} alt="Recipe" />
                     </div>
                   </div>
                   <div className="col-md-8">
