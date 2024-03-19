@@ -6,15 +6,22 @@ const PersonalizedRecipe = () => {
   const location = useLocation();
   const { recipe } = location.state;
 
-  //console.log(location.state);
+  /*console.log(location.state);
   //console.log(recipe);
+  */
 
-  const renderMacrosList = (macros) => {
-    return Object.entries(macros).map(([key, value]) => (
-      <li key={key}>
-        {key.charAt(0).toUpperCase() + key.slice(1)}: <span>{value}</span>
-      </li>
-    ));
+  const renderMacrosList = () => {
+    if (!recipe.macros) return null;
+    const macroLines = recipe.macros.split('\n');
+    return macroLines.map((line, index) => {
+      const [key, value] = line.split(':');
+      return <li key={index}>{key.trim()} <span>{value.trim()}</span></li>;
+    });
+  };
+
+  const renderList = (text) => {
+    if (!text) return null;
+    return text.split('\n').map((item, index) => <li key={index}>{item.trim()}</li>);
   };
 
   return (
@@ -34,27 +41,41 @@ const PersonalizedRecipe = () => {
                   <div className="col-md-8">
                     <h2 className="entry-title">{recipe.title || 'Generated Recipe'}</h2>
                     <div className="entry-content">
-                      <p>{recipe.summary || 'A delightful recipe awaits.'}</p>
-                      <div className="metro_post-meta">
-                        {/* Your meta content */}
-                      </div>
-                      <div className="nav nav-tabs" id="recipeTab" role="tablist">
-                        <a className="nav-item nav-link active" id="ingredients-tab" data-toggle="tab" href="#ingredients" role="tab" aria-controls="ingredients" aria-selected="true">Ingredients</a>
-                        <a className="nav-item nav-link" id="instructions-tab" data-toggle="tab" href="#instructions" role="tab" aria-controls="instructions" aria-selected="false">Instructions</a>
-                      </div>
-                      <div className="tab-content" id="recipeTabContent">
-                        <div className="tab-pane fade show active" id="ingredients" role="tabpanel" aria-labelledby="ingredients-tab">
-                          <p>{recipe.ingredients}</p>
+                      <span className="metro_post-meta">
+                        <a href="#"><i className="far fa-user" /> Mic</a>
+                        <a href="#"><i className="far fa-clock" /> 55 minutes</a>
+                      </span>
+                      <p>{recipe.summary || 'A delightful recipe awaits'}</p>
+                      <div className="row">
+                        <div className="col-12">
+                          <ul className="nav nav-tabs" id="myTab" role="tablist">
+                            <li className="nav-item">
+                              <a className="nav-link active" id="ingredients-tab" data-toggle="tab" href="#ingredients" role="tab" aria-controls="incredients" aria-selected="true">
+                                Ingredients List
+                              </a>
+                            </li>
+                            <li className="nav-item">
+                              <a className="nav-link" id="directions-tab" data-toggle="tab" href="#directions" role="tab" aria-controls="directions" aria-selected="false">
+                                Directions
+                              </a>
+                            </li>
+                          </ul>
+                          <div className="tab-content" id="myTabContent">
+                            <div className="tab-pane fade show active" id="ingredients" role="tabpanel" aria-labelledby="incredients-tab">
+                              <ul>{renderList(recipe.ingredients)}</ul>
+                            </div>
+                            <div className="tab-pane fade" id="directions" role="tabpanel" aria-labelledby="directions-tab">
+                              <ul>{renderList(recipe.instructions)}</ul>
+                            </div>
+                          </div>
                         </div>
-                        <div className="tab-pane fade" id="instructions" role="tabpanel" aria-labelledby="instructions-tab">
-                          <p>{recipe.instructions}</p>
+                        <div>
+                        <button type="submit" className="metro_btn-custom primary ml-3" name="button">Save Recipe</button>
                         </div>
                       </div>
                       <div className="metro_nutritional-facts">
                         <h6>Macros</h6>
-                        <ul>
-                          {recipe.macros && renderMacrosList(recipe.macros)}
-                        </ul>
+                        <ul>{renderMacrosList()}</ul>
                       </div>
                     </div>
                   </div>
@@ -70,7 +91,12 @@ const PersonalizedRecipe = () => {
 
 export default PersonalizedRecipe;
 
+
+
+
+
 /*
+
   return (
     <>
       <Breadcrumb page="Recipe Generator" />

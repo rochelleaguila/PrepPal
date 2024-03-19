@@ -14,24 +14,28 @@ openai.api_key = OPENAI_KEY
 
 def parse_generated_recipe(recipe_text):
     # Define markers that indicate the start of each section
+    title_marker = "Title:"
     summary_marker = "Summary:"
     ingredients_marker = "Ingredients:"
     instructions_marker = "Instructions:"
     macros_marker = "Macros:"
 
     # Find the positions of each marker in the text
+    title_start = recipe_text.find(title_marker) + len(title_marker)
     summary_start = recipe_text.find(summary_marker) + len(summary_marker)
     ingredients_start = recipe_text.find(ingredients_marker) + len(ingredients_marker)
     instructions_start = recipe_text.find(instructions_marker) + len(instructions_marker)
     macros_start = recipe_text.find(macros_marker) + len(macros_marker)
 
     # Extract the content based on the markers
+    title = recipe_text[title_start:summary_start - len(summary_marker)].strip()
     summary = recipe_text[summary_start:ingredients_start - len(ingredients_marker)].strip()
     ingredients = recipe_text[ingredients_start:instructions_start - len(instructions_marker)].strip()
     instructions = recipe_text[instructions_start:macros_start - len(macros_marker)].strip()
     macros = recipe_text[macros_start:].strip()
 
     return {
+        "title": title,
         "summary": summary,
         "ingredients": ingredients,
         "instructions": instructions,
@@ -40,10 +44,10 @@ def parse_generated_recipe(recipe_text):
 
 
 def basic_recipe_generation(diet_style, cuisine, health_focus=None):
-    prompt = f"Create a brief summary, list of ingredients, cooking instructions, and macros for a {diet_style.lower()} recipe that has {cuisine.lower()} influences"
+    prompt = f"Create a title, a brief summary, list of ingredients, cooking instructions, and macros for a {diet_style.lower()} recipe that has {cuisine.lower()} influences"
     if health_focus:
         prompt += f" and focuses on being {health_focus.lower()}."
-    prompt += "\n\nSummary:\n\nIngredients:\n\nInstructions:\n\nMacros:\n- Calories: \n- Sugar in g: \n- Protein in g: \n- Fat in g: \n- Carbs in g:"
+    prompt += "\n\nTitle:\n\nSummary:\n\nIngredients:\n\nInstructions:\n\nMacros:\n- Calories: Cal\n- Sugar: g\n- Protein: g\n- Fat: g\n- Carbs: g"
 
     try:
         response = openai.chat.completions.create(

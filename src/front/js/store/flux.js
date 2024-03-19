@@ -2,6 +2,7 @@ const getState = ({ getStore, getActions, setStore }) => {
   return {
     store: {
       access_token: null,
+      user: null,
     },
     actions: {
       auth: {
@@ -39,9 +40,33 @@ const getState = ({ getStore, getActions, setStore }) => {
             const data = await resp.json();
             setStore({
               access_token: data.access_token,
+              user: { username },
             });
           }
         },
+
+        logout: () => {
+          setStore({
+            access_token: null,
+            user: null,
+          });
+        },
+      },
+
+      // Example action to use the access token for an authenticated request
+      getProtectedData: async () => {
+        const store = getStore();
+        const resp = await fetch(`${process.env.BACKEND_URL}/api/protected`, {
+          headers: {
+            "Authorization": `Bearer ${store.access_token}`,
+          },
+        });
+
+        if (resp.ok) {
+          const data = await resp.json();
+          console.log(data);
+          // Handle protected data
+        }
       },
     },
   };
