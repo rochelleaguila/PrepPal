@@ -7,40 +7,59 @@ load_dotenv()
 OPENAI_KEY = os.getenv('OPENAI_KEY')
 openai.api_key = OPENAI_KEY
 
+def parse_generated_recipe(recipe_text):
+    # Define markers that indicate the start of each section
+    summary_marker = "Summary:"
+    ingredients_marker = "Ingredients:"
+    instructions_marker = "Instructions:"
+    macros_marker = "Macros:"
+
+    # Find the positions of each marker in the text
+    summary_start = recipe_text.find(summary_marker) + len(summary_marker)
+    ingredients_start = recipe_text.find(ingredients_marker) + len(ingredients_marker)
+    instructions_start = recipe_text.find(instructions_marker) + len(instructions_marker)
+    macros_start = recipe_text.find(macros_marker) + len(macros_marker)
+
+    # Extract the content based on the markers
+    summary = recipe_text[summary_start:ingredients_start - len(ingredients_marker)].strip()
+    ingredients = recipe_text[ingredients_start:instructions_start - len(instructions_marker)].strip()
+    instructions = recipe_text[instructions_start:macros_start - len(macros_marker)].strip()
+    macros = recipe_text[macros_start:].strip()
+
+    return {
+        "summary": summary,
+        "ingredients": ingredients,
+        "instructions": instructions,
+        "macros": macros
+    }
+
+
 def basic_recipe_generation(diet_style, cuisine, health_focus=None):
-    """
-    Generates a basic recipe based on the given diet style, cuisine, and optional health focus.
-
-    Parameters:
-    - diet_style: The dietary style preference (e.g., Vegan, Keto).
-    - cuisine: The cuisine preference (e.g., Italian, Mexican).
-    - health_focus: Optional. A health focus such as 'Low Carb' or 'Hearty'.
-
-    Returns:
-    A string containing the generated recipe.
-    """
-    # Construct the prompt with the given parameters
-    prompt_parts = [f"A {diet_style.lower()} recipe", f"cuisine is {cuisine.lower()}"]
+    engine = "gpt-4"
+    prompt = f"Create a brief summary, list of ingredients, cooking instructions, and macros for a {diet_style.lower()} recipe that has {cuisine.lower()} influences"
     if health_focus:
-        prompt_parts.append(f"focus on {health_focus.lower()}")
-    prompt = f"Create a recipe where {' and '.join(prompt_parts)}."
+        prompt += f" and focuses on being {health_focus.lower()}."
+
+    prompt += "\n\nSummary:\n\nIngredients:\n\nInstructions:\n\nMacros:\n- Calories: \n- Sugar in g: \n- Protein in g: \n- Fat in g: \n- Carbs in g:"
 
     try:
         response = openai.Completion.create(
-            engine="text-davinci-003",  # Change to the appropriate engine for GPT-4
+            engine=engine,
             prompt=prompt,
-            temperature=0.7,  # Adjust as needed for creativity
-            max_tokens=150,  # Adjust based on how long you want the recipe to be
+            temperature=0.5,
+            max_tokens=500,
             top_p=1.0,
-            frequency_penalty=0.5,
-            presence_penalty=0.0
+            frequency_penalty=0.0,
+            presence_penalty=0.0,
+            stop=["\n\n"]
         )
-        # Extracting and returning the generated recipe text
         recipe_text = response.choices[0].text.strip()
         return recipe_text
     except Exception as e:
-        print(f"Error generating recipe: {e}")
+        print(f"Error in recipe generation: {e}")
         return "Could not generate a recipe at this time."
+
+
 
 def generate_custom_recipe(user_preferences, base_recipes_titles):
     """
@@ -65,18 +84,23 @@ def generate_custom_recipe(user_preferences, base_recipes_titles):
     )
     return response.choices[0].text.strip()
 
+
 def generate_image_from_recipe(recipe_description):
     """
     Generate an image based on a recipe description using OpenAI's DALL·E.
     """
-    response = openai.Image.create(
-        engine="davinci-codex",  # Adjust with the correct identifier for DALL·E
-        prompt=recipe_description,
-        n=1,  # Number of images to generate
-        size="1024x1024"
-    )
+    try:
+        response = openai.Image.create(
+            engine="dalle-e-3",
+            prompt=recipe_description,
+            n=1,  # Number of images to generate
+            size="1024x1024"
+        )
 
-    return response.data[0].url
+        return response["data"][0]["url"]
+    except Exception as e:
+        print(f"Error generating image: {e}")
+        return None
 
 '''
 def generate_custom_recipe(base_recipes, user_preferences):

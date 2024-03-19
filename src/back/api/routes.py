@@ -7,8 +7,8 @@ from flask_cors import CORS
 from back.models.models import db, User
 from back.api.utils import generate_sitemap, APIException
 from back.database.database_functions import fetch_preferences
-from spoonacular_api import search_recipes_advanced
-from openai_api import basic_recipe_generation
+from .spoonacular_api import search_recipes_advanced
+from .openai_api import basic_recipe_generation, parse_generated_recipe, generate_image_from_recipe
 
 api = Blueprint('api', __name__)
 
@@ -21,16 +21,18 @@ def generate_basic_recipe():
 
     diet_style = data.get("dietStyle")
     cuisine = data.get("cuisine")
-
-    # Fetch base recipes using Spoonacular
-    base_recipes_data = search_recipes_advanced(diet=diet_style, cuisine=cuisine)
-
-    # Further processing to extract recipe titles or summaries
+    health_focus = data.get("health_focus")
 
     # Generate a recipe with OpenAI
-    generated_recipe = basic_recipe_generation(diet_style, cuisine, health_focus=None)
+    generated_recipe = basic_recipe_generation(diet_style, cuisine, health_focus)
 
-    return jsonify({"recipe": generated_recipe})
+    parsed_recipe = parse_generated_recipe(generated_recipe)
+
+    image_url = generate_image_from_recipe(parsed_recipe["summary"])
+
+    parsed_recipe["image_url"] = image_url
+
+    return jsonify(parsed_recipe)
 
 @api.route('/hello', methods=['POST', 'GET'])
 def handle_hello():

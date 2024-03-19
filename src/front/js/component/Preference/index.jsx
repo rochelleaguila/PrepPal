@@ -122,6 +122,15 @@ const Preference = (props) => {
                   />
                   <i>g</i>
                 </div>
+                <div className="form-group">
+                  <input
+                    type="text"
+                    placeholder="Sugar"
+                    className="form-control"
+                    name="sugar"
+                  />
+                  <i>g</i>
+                </div>
                 <h6>Cuisine types</h6>
                 <div className="form-group">
                   <select className="form-control" name="cuisine" id="cuisine">

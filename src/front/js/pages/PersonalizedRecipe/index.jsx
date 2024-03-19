@@ -1,8 +1,73 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Breadcrumb from "../../component/Breadcrumb/index.jsx";
 
 const PersonalizedRecipe = () => {
+  const location = useLocation();
+  const { recipe } = location.state?.recipe || {};
+
+  const renderMacrosList = (macros) => {
+    return Object.entries(macros).map(([key, value]) => (
+      <li key={key}>
+        {key.charAt(0).toUpperCase() + key.slice(1)}: <span>{value}</span>
+      </li>
+    ));
+  };
+
+  return (
+    <>
+      <Breadcrumb page="Recipe Generator" />
+      <div id="personal-recipe" className="section metro_post-single">
+        <div className="container">
+          <div className="row">
+            <div className="col-lg-12">
+              <div className="metro_post-single-wrapper metro_recipe-single-wrapper">
+                <div className="row">
+                  <div className="col-md-4">
+                    <div className="metro_post-single-thumb sticky-image">
+                      <img src={recipe.imageURL || "assets/img/empty.svg"} alt="Recipe" />
+                    </div>
+                  </div>
+                  <div className="col-md-8">
+                    <h2 className="entry-title">{recipe.title || 'Generated Recipe'}</h2>
+                    <div className="entry-content">
+                      <p>{recipe.summary || 'A delightful recipe awaits.'}</p>
+                      <div className="metro_post-meta">
+                        {/* Your meta content */}
+                      </div>
+                      <div className="nav nav-tabs" id="recipeTab" role="tablist">
+                        <a className="nav-item nav-link active" id="ingredients-tab" data-toggle="tab" href="#ingredients" role="tab" aria-controls="ingredients" aria-selected="true">Ingredients</a>
+                        <a className="nav-item nav-link" id="instructions-tab" data-toggle="tab" href="#instructions" role="tab" aria-controls="instructions" aria-selected="false">Instructions</a>
+                      </div>
+                      <div className="tab-content" id="recipeTabContent">
+                        <div className="tab-pane fade show active" id="ingredients" role="tabpanel" aria-labelledby="ingredients-tab">
+                          <p>{recipe.ingredients}</p>
+                        </div>
+                        <div className="tab-pane fade" id="instructions" role="tabpanel" aria-labelledby="instructions-tab">
+                          <p>{recipe.instructions}</p>
+                        </div>
+                      </div>
+                      <div className="metro_nutritional-facts">
+                        <h6>Macros</h6>
+                        <ul>
+                          {recipe.macros && renderMacrosList(recipe.macros)}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default PersonalizedRecipe;
+
+/*
   return (
     <>
       <Breadcrumb page="Recipe Generator" />
@@ -15,11 +80,12 @@ const PersonalizedRecipe = () => {
                 <div className="row">
                   <div className="col-md-4">
                     <div className="metro_post-single-thumb sticky-image">
+                      {/*<img src={recipe.imageURL || "assets/img/empty.svg"} alt="Recipe" />
                       <img src="assets/img/empty.svg" alt="post" />
                     </div>
                   </div>
                   <div className="col-md-8">
-                    <h2 className="entry-title">Planting Season Begins</h2>
+                    <h2 className="entry-title">{recipe.title || 'Generated Recipe'}</h2>
                     <div className="entry-content">
                       <span className="metro_post-meta">
                         <a href="#">
@@ -30,23 +96,7 @@ const PersonalizedRecipe = () => {
                         </a>
                       </span>
                       <p>
-                        Cras ultricies ligula sed magna dictum porta. Cras
-                        ultricies ligula sed magna dictum porta. Vestibulum ante
-                        ipsum primis in faucibus orci luctus et ultrices posuere
-                        cubilia Curae; Donec velit neque, auctor sit amet
-                        aliquam vel, ullamcorper sit amet ligula. Quisque velit
-                        nisi, pretium ut lacinia in, elementum id enim. Donec
-                        sollicitudin molestie malesuada. Cras ultricies ligula
-                        sed magna dictum porta. Donec rutrum congue leo eget
-                        malesuada. Cras ultricies ligula sed magna dictum porta.
-                        Cras ultricies ligula sed magna dictum porta. Vestibulum
-                        ante ipsum primis in faucibus orci luctus et ultrices
-                        posuere cubilia Curae; Donec velit neque, auctor sit
-                        amet aliquam vel, ullamcorper sit amet ligula. Quisque
-                        velit nisi, pretium ut lacinia in, elementum id enim.
-                        Donec sollicitudin molestie malesuada. Cras ultricies
-                        ligula sed magna dictum porta. Donec rutrum congue leo
-                        eget malesuada.
+                        {recipe.summary || 'A delightful recipe awaits'}
                       </p>
                       <div className="row">
                         <div className="col-12">
@@ -58,14 +108,14 @@ const PersonalizedRecipe = () => {
                             <li className="nav-item">
                               <a
                                 className="nav-link active"
-                                id="incredients-tab"
+                                id="ingredients-tab"
                                 data-toggle="tab"
-                                href="#incredients"
+                                href="#ingredients"
                                 role="tab"
                                 aria-controls="incredients"
                                 aria-selected="true"
                               >
-                                Incredients List
+                                Ingredients List
                               </a>
                             </li>
                             <li className="nav-item">
@@ -85,7 +135,7 @@ const PersonalizedRecipe = () => {
                           <div className="tab-content" id="myTabContent">
                             <div
                               className="tab-pane fade show active"
-                              id="incredients"
+                              id="ingredients"
                               role="tabpanel"
                               aria-labelledby="incredients-tab"
                             >
@@ -105,9 +155,6 @@ const PersonalizedRecipe = () => {
                                   </li>
                                   <li>
                                     Carbs <span>18g</span>
-                                  </li>
-                                  <li>
-                                    Food Far <span>0.1</span>
                                   </li>
                                 </ul>
                               </div>
@@ -152,3 +199,4 @@ const PersonalizedRecipe = () => {
 };
 
 export default PersonalizedRecipe;
+*/

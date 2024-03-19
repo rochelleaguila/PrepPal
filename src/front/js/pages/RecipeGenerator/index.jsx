@@ -1,16 +1,27 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Breadcrumb from "../../component/Breadcrumb/index.jsx";
 
 const RecipeGenerator = () => {
+  const [dietStyle, setDietStyle] = useState('');
+  const [healthFocus, setHealthFocus] = useState('');
+  const [cuisine, setCuisine] = useState('');
+  let navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    /*
     const formData = new FormData(document.querySelector('form'));
     const data = Object.fromEntries(formData.entries());
-
-    // POST request to create basic recipee
+    */
+    const data = {
+      dietStyle,
+      cuisine,
+      health_focus: healthFocus,
+    };
+    // POST request to create basic recipe
     try {
-      const response = await fetch('/api/generate-basic-recipe', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/generate-basic-recipe`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -21,12 +32,22 @@ const RecipeGenerator = () => {
       if (!response.ok) throw new Error('Recipe generation failed');
 
       const result = await response.json();
-      // Redirect or display the generated recipe
-      console.log(result); // You might want to display this result in the UI
+
+      // Navigate to the PersonalizedRecipe component with the recipe data
+      navigate('/personalized-recipe', { state: { recipe: result.recipe } });
+
     } catch (error) {
       console.error(error);
     }
+
   };
+
+  const handleRadioButtonChange = (event) => {
+    const { name, value } = event.target;
+    if (name === "dietStyle") setDietStyle(value);
+    if (name === "health_focus") setHealthFocus(value);
+  }
+
   return (
     <>
       <div className="container">
@@ -36,9 +57,12 @@ const RecipeGenerator = () => {
               <h4 className="text-center">Recipe Generator</h4>
               <form
                 className="form_validate ajax_submit form_alert"
+                onSubmit={handleSubmit}
+                /*
                 action=""
                 method="post"
                 encType="multipart/form-data"
+                */
               >
                 <div className="form-group">
                   <h6>Make your selections</h6>
@@ -51,7 +75,9 @@ const RecipeGenerator = () => {
                         name="dietStyle"
                         id="omni"
                         autoComplete="off"
-                        defaultChecked=""
+                        value="Omni"
+                        onChange={handleRadioButtonChange}
+                        //defaultChecked=""
                       />
                       Omni
                     </label>
@@ -61,6 +87,8 @@ const RecipeGenerator = () => {
                         name="dietStyle"
                         id="carnivore"
                         autoComplete="off"
+                        value="Carnivore"
+                        onChange={handleRadioButtonChange}
                       />
                       Carnivore
                     </label>
@@ -70,6 +98,8 @@ const RecipeGenerator = () => {
                         name="dietStyle"
                         id="vegan"
                         autoComplete="off"
+                        value="Vegan"
+                        onChange={handleRadioButtonChange}
                       />
                       Vegan
                     </label>
@@ -79,6 +109,8 @@ const RecipeGenerator = () => {
                         name="dietStyle"
                         id="vegetarian"
                         autoComplete="off"
+                        value="Vegetarian"
+                        onChange={handleRadioButtonChange}
                       />
                       Vegetarian
                     </label>
@@ -88,6 +120,8 @@ const RecipeGenerator = () => {
                         name="dietStyle"
                         id="keto"
                         autoComplete="off"
+                        value="Keto"
+                        onChange={handleRadioButtonChange}
                       />
                       Keto
                     </label>
@@ -98,36 +132,44 @@ const RecipeGenerator = () => {
                     <label className="btn btn-danger btn-lg py-3 px-4 mr-3 active">
                       <input
                         type="radio"
-                        name="protein3"
+                        name="health_focus"
                         id="protein10"
                         autoComplete="off"
+                        value="Healthy"
+                        onChange={handleRadioButtonChange}
                       />
                       Healthy
                     </label>
                     <label className="btn btn-danger btn-lg py-3 px-4 mr-3">
                       <input
                         type="radio"
-                        name="protein3"
+                        name="health_focus"
                         id="protein11"
                         autoComplete="off"
+                        value="Hearty"
+                        onChange={handleRadioButtonChange}
                       />
                       Hearty
                     </label>
                     <label className="btn btn-danger btn-lg py-3 px-4 mr-3">
                       <input
                         type="radio"
-                        name="protein3"
+                        name="health_focus"
                         id="protein12"
                         autoComplete="off"
+                        value="Low Carb"
+                        onChange={handleRadioButtonChange}
                       />
                       Low Carb
                     </label>
                     <label className="btn btn-danger btn-lg py-3 px-4 mr-3">
                       <input
                         type="radio"
-                        name="protein3"
+                        name="health_focus"
                         id="protein13"
                         autoComplete="off"
+                        value="Whole Foods"
+                        onChange={handleRadioButtonChange}
                       />
                       Whole Foods
                     </label>
@@ -135,7 +177,7 @@ const RecipeGenerator = () => {
                 </div>
 
                 <div className="form-group">
-                  <select className="form-control" name="cuisine" id="cuisine">
+                  <select className="form-control" name="cuisine" id="cuisine" value={cuisine} onChange={e => setCuisine(e.target.value)} >
                     <option value="" disabled selected>
                       Select Cuisine
                     </option>
@@ -148,7 +190,8 @@ const RecipeGenerator = () => {
                   <i className="far fa-arrow-down" />
                 </div>
                 <button
-                  type="button"
+                  type="submit"
+                  //type="button"
                   className="metro_btn-custom primary"
                   name="button"
                   onClick={handleSubmit}
