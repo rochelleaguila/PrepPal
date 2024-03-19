@@ -1,6 +1,10 @@
 import React from "react";
 import Banner from "../../component/Banner/index.jsx";
 import "./home.scss";
+import rec1 from "../../../img/recipes/1.jpg";
+import rec2 from "../../../img/recipes/recip2.jpg";
+import rec3 from "../../../img/recipes/3.jpg";
+import rec4 from "../../../img/recipes/4.jpg";
 
 const Home = () => {
   return (
@@ -132,7 +136,7 @@ const Home = () => {
                     <div className="metro_post metro_recipe metro_recipe-3 col-md-3">
                       <div className="metro_post-thumb">
                         <a href="recipe-details.html">
-                          <img src="assets/img/recipes/1.jpg" alt="recipe" />
+                          <img src={rec1} alt="recipe" />
                         </a>
                         <a
                           href="recipe-details.html"
@@ -157,7 +161,7 @@ const Home = () => {
                     <div className="metro_post metro_recipe metro_recipe-3 col-md-3">
                       <div className="metro_post-thumb">
                         <a href="recipe-details.html">
-                          <img src="assets/img/recipes/2.jpg" alt="recipe" />
+                          <img src={rec2} alt="recipe" />
                         </a>
                         <a
                           href="recipe-details.html"
@@ -183,7 +187,7 @@ const Home = () => {
                     <div className="metro_post metro_recipe metro_recipe-3 col-md-3">
                       <div className="metro_post-thumb">
                         <a href="recipe-details.html">
-                          <img src="assets/img/recipes/3.jpg" alt="recipe" />
+                          <img src={rec3} alt="recipe" />
                         </a>
                         <a
                           href="recipe-details.html"
@@ -209,7 +213,7 @@ const Home = () => {
                     <div className="metro_post metro_recipe metro_recipe-3 col-md-3">
                       <div className="metro_post-thumb">
                         <a href="recipe-details.html">
-                          <img src="assets/img/recipes/4.jpg" alt="recipe" />
+                          <img src={rec4} alt="recipe" />
                         </a>
                         <a
                           href="recipe-details.html"

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./header.scss";
 import { Link } from "react-router-dom";
-import LightLogo from "../../../../../public/assets/img/logo-light.png";
-import Logo from "../../../../../public/assets/img/logo.png";
+import lightLogo from "../../../img/logo-light.png";
+import logo from "../../../img/logo.png";
 
 const Header = () => {
   const [appearance, setAppearance] = useState("");
@@ -53,8 +53,8 @@ const Header = () => {
     <>
       <aside className="metro_aside metro_aside-left">
         <Link className="navbar-brand" to="/">
-          <img className="logo-light" src={LightLogo} alt="logo" />
-          <img className="logo-dark" src={Logo} alt="logo" />
+          <img className="logo-light" src={lightLogo} alt="logo" />
+          <img className="logo-dark" src={logo} alt="logo" />
         </Link>
       </aside>
       <div className="metro_aside-overlay aside-trigger-left" />
@@ -63,11 +63,11 @@ const Header = () => {
           <div className="container">
             <nav className="navbar">
               <Link className="navbar-brand logo-light" to="/">
-                <img src="/assets/img/logo-light.png" alt="logo" />
+                <img className="logo-light" src={lightLogo} alt="logo" />
                 <h4 className="d-inline-block">PrepPal</h4>
               </Link>
               <Link className="navbar-brand logo-dark" to="/">
-                <img src="/assets/img/logo.png" alt="logo" />
+                <img className="logo-dark" src={logo} alt="logo" />
                 <h4 className="d-inline-block">PrepPal</h4>
               </Link>
 

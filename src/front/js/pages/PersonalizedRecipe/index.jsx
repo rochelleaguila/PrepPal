@@ -5,8 +5,6 @@ import Breadcrumb from "../../component/Breadcrumb/index.jsx";
 const PersonalizedRecipe = () => {
   return (
     <>
-      <Breadcrumb page="Recipe Generator" />
-
       <div id="personal-recipe" className="section metro_post-single">
         <div className="container">
           <div className="row">
