@@ -10,7 +10,9 @@ const PersonalizedRecipe = () => {
   const { recipe } = location.state;
 
   const isLoggedIn = !!store.access_token;
-  const[userMenus, setUserMenus] = useState([]);
+  const [userMenus, setUserMenus] = useState([]);
+  const [showSaveOptions, setSaveOptions] = useState(false)
+  const [showOptions, setShowOptions] =useState(false);
 
   /*console.log(location.state);
   //console.log(recipe);
@@ -24,8 +26,8 @@ const PersonalizedRecipe = () => {
 
   const handleSaveRecipe = () => {
     if (!isLoggedIn) {
-      navigate('/login');
-      return;
+      //navigate('/login'); return;
+      console.log("Save recipe logic for logged-in users goes here.");
     }
     // Implement saving recipe logic here for logged-in users
     actions.saveRecipe(recipe);
@@ -39,29 +41,90 @@ const PersonalizedRecipe = () => {
     actions.createNewMenu(recipe);
   }
 
-  // Logic to render Save to Menu and Create New Menu options for logged-in users
-  const renderLoggedInOptions = () => {
-    if (!isLoggedIn) return null;
+  const handleShowOptions = () => {
+    if (!isLoggedIn) {
+      setShowOptions(true); // Show login/register options for non-logged-in users
+    } else {
+      // Here you could directly call your save function or set 'showOptions' to true
+      // to display additional options for logged-in users (if applicable)
+      handleSaveRecipe();
+    }
+  };
 
-    return (
-      <>
-        <div>
-          <button onClick={handleSaveRecipe} className="metro_btn-custom primary">
-            Save Recipe
-          </button>
+  const handleSaveRecipeClick = () => {
+    if (!isLoggedIn) {
+      setShowOptions(true); // Show login/register options for non-logged-in users
+    } else {
+      // For logged-in users, directly proceed to show save options or perform the save action
+      // Optionally toggle showing save options for logged-in users or directly invoke save logic
+      setShowSaveOptions(!showSaveOptions); // Assuming you have a state to manage this for logged-in users
+    }
+  };
+
+
+  // Logic to render Save to Menu and Create New Menu options for logged-in users
+  const renderOptions = () => {
+    if (!isLoggedIn) {
+      if (showOptions) {
+        return (
+          <>
+            <button onClick={() => navigate('/login')} className="metro_btn-custom primary ml-3">Login</button>
+            <button onClick={() => navigate('/register')} className="metro_btn-custom secondary ml-3">Register</button>
+          </>
+        );
+      }
+      return null; // No additional buttons shown by default for non-logged-in users
+    }
+
+    if (showOptions) {
+      return (
+        <>
+          <button onClick={() => handleSaveRecipe()} className="metro_btn-custom success ml-3">Save Recipe</button>
           {userMenus.map(menu => (
-            <button key={menu.menu_id} onClick={() => handleSaveToMenu(menu.menu_id)} className="metro_btn-custom">
+            <button key={menu.menu_id} onClick={() => handleSaveToMenu(menu.menu_id)} className="metro_btn-custom info ml-3">
               Save to {menu.menu_name}
             </button>
           ))}
-          <button onClick={handleCreateNewMenu} className="metro_btn-custom primary">
-            Create New Menu
-          </button>
-        </div>
-      </>
-    );
+          <button onClick={handleCreateNewMenu} className="metro_btn-custom primary ml-3">Create New Menu</button>
+        </>
+      );
+    }
+
+    return null;
   };
 
+  const renderSaveForNonUser = () => {
+    if (showOptions && !isLoggedIn) {
+      return (
+        <>
+          <button onClick={() => navigate('/login')} className="metro_btn-custom primary ml-3">Login</button>
+          <button onClick={() => navigate('/register')} className="metro_btn-custom secondary ml-3">Register</button>
+        </>
+      );
+    }
+    return null;
+  };
+
+  const renderSaveForUser = () => {
+    if (showOptions && isLoggedIn) {
+      return (
+        <>
+          <button onClick={handleSaveRecipe} className="metro_btn-custom primary ml-3">Add to Saved Recipes</button>
+          {userMenus.length > 0 && (
+            <>
+              {userMenus.map(menu => (
+                <button key={menu.menu_id} onClick={() => handleSaveToMenu(menu.menu_id)} className="metro_btn-custom info ml-3">
+                  Save to {menu.menu_name}
+                </button>
+              ))}
+            </>
+          )}
+          <button onClick={handleCreateNewMenu} className="metro_btn-custom success ml-3">Create New Menu</button>
+        </>
+      );
+    }
+    return null;
+  };
 
 
   const renderMacrosList = () => {
@@ -130,7 +193,14 @@ const PersonalizedRecipe = () => {
                         <ul>{renderMacrosList()}</ul>
                       </div>
                       <div>
-                        <button type="submit" className="metro_btn-custom primary ml-3" name="button">Save Recipe</button>
+                        <button type="submit" className="metro_btn-custom primary ml-3" name="button" onClick={handleShowOptions}>
+                          Save Recipe
+                        </button>
+                      </div>
+
+                      <div className="save-recipe-options">
+                      {renderSaveForNonUser()}
+                      {renderSaveForUser()}
                       </div>
                     </div>
                   </div>
