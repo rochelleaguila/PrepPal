@@ -64,11 +64,11 @@ const Header = () => {
             <nav className="navbar">
               <Link className="navbar-brand logo-light" to="/">
                 <img src="/assets/img/logo-light.png" alt="logo" />
-                <h4 className="d-inline-block">PrePal</h4>
+                <h4 className="d-inline-block">PrepPal</h4>
               </Link>
               <Link className="navbar-brand logo-dark" to="/">
                 <img src="/assets/img/logo.png" alt="logo" />
-                <h4 className="d-inline-block">PrePal</h4>
+                <h4 className="d-inline-block">PrepPal</h4>
               </Link>
 
               <div className="metro_header-controls">

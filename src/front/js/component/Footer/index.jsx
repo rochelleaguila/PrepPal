@@ -9,8 +9,7 @@ const Footer = () => {
         <div className="container">
           <div className="metro_footer-copyright footer-widget">
             <p>
-              Copyright © 2024 <Link to="/">PrePal</Link> All Rights
-              Reserved.
+              Copyright © 2024 <Link to="/">PrepPal</Link> All Rights Reserved.
             </p>
             <ul className="social-media">
               <li>

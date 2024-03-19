@@ -78,7 +78,7 @@ const RecipeGenerator = () => {
                         id="protein10"
                         autoComplete="off"
                       />
-                      .........................
+                      Healthy
                     </label>
                     <label className="btn btn-danger btn-lg py-3 px-4 mr-3">
                       <input
@@ -87,7 +87,7 @@ const RecipeGenerator = () => {
                         id="protein11"
                         autoComplete="off"
                       />
-                      .........................
+                      Hearty
                     </label>
                     <label className="btn btn-danger btn-lg py-3 px-4 mr-3">
                       <input
@@ -96,7 +96,7 @@ const RecipeGenerator = () => {
                         id="protein12"
                         autoComplete="off"
                       />
-                      .........................
+                      Low Carb
                     </label>
                     <label className="btn btn-danger btn-lg py-3 px-4 mr-3">
                       <input
@@ -105,7 +105,7 @@ const RecipeGenerator = () => {
                         id="protein13"
                         autoComplete="off"
                       />
-                      ........................
+                      Whole Foods
                     </label>
                   </div>
                 </div>
@@ -127,7 +127,7 @@ const RecipeGenerator = () => {
                   type="button"
                   className="metro_btn-custom primary"
                   name="button"
-                  onClick={(e) => location = "/personalized-recipe"} //Remove it
+                  onClick={(e) => (location = "/personalized-recipe")} //Remove it
                 >
                   Generate Recipe
                 </button>
