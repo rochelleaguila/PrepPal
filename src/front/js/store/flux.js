@@ -51,6 +51,21 @@ const getState = ({ getStore, getActions, setStore }) => {
             user: null,
           });
         },
+
+        fetchUserMenus: async () => {
+          const store = getStore();
+          const response = await fetch(`${process.env.BACKEND_URL}/api/user/menus?user_id=${store.user_id}`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (response.ok) {
+            const menus = await response.json();
+            setStore({ menus });
+          }
+        }
       },
 
       // Example action to use the access token for an authenticated request

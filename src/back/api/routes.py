@@ -4,7 +4,7 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 from flask import Flask, request, jsonify, url_for, Blueprint
 from flask_cors import CORS
 
-from back.models.models import db, User
+from back.models.models import db, User, Menu
 from back.api.utils import generate_sitemap, APIException
 from back.database.database_functions import fetch_preferences
 from .spoonacular_api import search_recipes_advanced
@@ -35,6 +35,12 @@ def generate_basic_recipe():
     #print(parsed_recipe)
 
     return jsonify(parsed_recipe)
+
+@api.route('/user/menus', methods=['GET'])
+def get_user_menus():
+    user_id = request.args.get(user_id)
+    menus = Menu.query.filter_by(user_id=user_id).all()
+    return jsonify([{"menu_id": menu.menu_id, "menu_name": menu.menu_name} for menu in menus]), 200
 
 @api.route('/hello', methods=['POST', 'GET'])
 def handle_hello():

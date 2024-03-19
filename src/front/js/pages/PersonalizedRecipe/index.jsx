@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Breadcrumb from "../../component/Breadcrumb/index.jsx";
+import { Context } from "../../store/appContext.js"
 
 const PersonalizedRecipe = () => {
   const location = useLocation();
   const { recipe } = location.state;
+  const { store } = useContext(Context);
+
+  const isLoggedIn = !!store.access_token;
 
   /*console.log(location.state);
   //console.log(recipe);
@@ -69,13 +73,13 @@ const PersonalizedRecipe = () => {
                             </div>
                           </div>
                         </div>
-                        <div>
-                        <button type="submit" className="metro_btn-custom primary ml-3" name="button">Save Recipe</button>
-                        </div>
                       </div>
                       <div className="metro_nutritional-facts">
                         <h6>Macros</h6>
                         <ul>{renderMacrosList()}</ul>
+                      </div>
+                      <div>
+                        <button type="submit" className="metro_btn-custom primary ml-3" name="button">Save Recipe</button>
                       </div>
                     </div>
                   </div>
