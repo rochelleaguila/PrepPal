@@ -3,6 +3,30 @@ import { Link } from "react-router-dom";
 import Breadcrumb from "../../component/Breadcrumb/index.jsx";
 
 const RecipeGenerator = () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(document.querySelector('form'));
+    const data = Object.fromEntries(formData.entries());
+
+    // POST request to create basic recipee
+    try {
+      const response = await fetch('/api/generate-basic-recipe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) throw new Error('Recipe generation failed');
+
+      const result = await response.json();
+      // Redirect or display the generated recipe
+      console.log(result); // You might want to display this result in the UI
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <>
       <div className="container">
@@ -127,7 +151,8 @@ const RecipeGenerator = () => {
                   type="button"
                   className="metro_btn-custom primary"
                   name="button"
-                  onClick={(e) => (location = "/personalized-recipe")} //Remove it
+                  onClick={handleSubmit}
+                  //onClick={(e) => (location = "/personalized-recipe")} //Remove it
                 >
                   Generate Recipe
                 </button>

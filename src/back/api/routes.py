@@ -8,10 +8,29 @@ from back.models.models import db, User
 from back.api.utils import generate_sitemap, APIException
 from back.database.database_functions import fetch_preferences
 from spoonacular_api import search_recipes_advanced
+from openai_api import basic_recipe_generation
 
 api = Blueprint('api', __name__)
 
 CORS(api)
+
+@api.route('/generate-basic-recipe', methods=['POST'])
+def generate_basic_recipe():
+    # Extract data from the frontend
+    data = request.json
+
+    diet_style = data.get("dietStyle")
+    cuisine = data.get("cuisine")
+
+    # Fetch base recipes using Spoonacular
+    base_recipes_data = search_recipes_advanced(diet=diet_style, cuisine=cuisine)
+
+    # Further processing to extract recipe titles or summaries
+
+    # Generate a recipe with OpenAI
+    generated_recipe = basic_recipe_generation(diet_style, cuisine, health_focus=None)
+
+    return jsonify({"recipe": generated_recipe})
 
 @api.route('/hello', methods=['POST', 'GET'])
 def handle_hello():

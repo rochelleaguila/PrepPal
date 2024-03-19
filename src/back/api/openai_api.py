@@ -7,18 +7,55 @@ load_dotenv()
 OPENAI_KEY = os.getenv('OPENAI_KEY')
 openai.api_key = OPENAI_KEY
 
-def basic_recipe_generation
+def basic_recipe_generation(diet_style, cuisine, health_focus=None):
+    """
+    Generates a basic recipe based on the given diet style, cuisine, and optional health focus.
 
-def generate_recipe_based_on_preferences(user_preferences, base_recipes_titles):
+    Parameters:
+    - diet_style: The dietary style preference (e.g., Vegan, Keto).
+    - cuisine: The cuisine preference (e.g., Italian, Mexican).
+    - health_focus: Optional. A health focus such as 'Low Carb' or 'Hearty'.
+
+    Returns:
+    A string containing the generated recipe.
     """
-    Generate a custom recipe using OpenAI's GPT-4, based on user preferences and a list of base recipe titles.
+    # Construct the prompt with the given parameters
+    prompt_parts = [f"A {diet_style.lower()} recipe", f"cuisine is {cuisine.lower()}"]
+    if health_focus:
+        prompt_parts.append(f"focus on {health_focus.lower()}")
+    prompt = f"Create a recipe where {' and '.join(prompt_parts)}."
+
+    try:
+        response = openai.Completion.create(
+            engine="text-davinci-003",  # Change to the appropriate engine for GPT-4
+            prompt=prompt,
+            temperature=0.7,  # Adjust as needed for creativity
+            max_tokens=150,  # Adjust based on how long you want the recipe to be
+            top_p=1.0,
+            frequency_penalty=0.5,
+            presence_penalty=0.0
+        )
+        # Extracting and returning the generated recipe text
+        recipe_text = response.choices[0].text.strip()
+        return recipe_text
+    except Exception as e:
+        print(f"Error generating recipe: {e}")
+        return "Could not generate a recipe at this time."
+
+def generate_custom_recipe(user_preferences, base_recipes_titles):
     """
-    preferences_summary = " ".join([f"{key}: {value}" for key, value in user_preferences.items() if value])
+    Generate a custom recipe using OpenAI, based on user preferences including serving size,
+    diet, intolerances, ingredients, and cuisine, and inspired by base recipe titles from Spoonacular.
+    """
+    # Constructing the prompt with user preferences, serving size, and base recipe titles
+    preferences_summary = ", ".join([f"{key.replace('_', ' ').capitalize()}: {value}" for key, value in user_preferences.items() if value])
     base_recipes_str = ", ".join(base_recipes_titles)
-    prompt = f"Create a unique recipe considering the following preferences: {preferences_summary}. Use these recipes for inspiration: {base_recipes_str}."
+    prompt = (f"Create a unique recipe for {user_preferences.get('serving_size', 'a few')} servings "
+              f"considering the following preferences: {preferences_summary}. "
+              f"Use inspiration from these recipes: {base_recipes_str}.")
 
     response = openai.Completion.create(
-        engine="gpt-4",
+        engine="gpt-4",  # Change to the latest GPT-4 engine once available
         prompt=prompt,
         temperature=0.7,
         max_tokens=1024,
@@ -26,7 +63,6 @@ def generate_recipe_based_on_preferences(user_preferences, base_recipes_titles):
         frequency_penalty=0.5,
         presence_penalty=0.0
     )
-
     return response.choices[0].text.strip()
 
 def generate_image_from_recipe(recipe_description):
