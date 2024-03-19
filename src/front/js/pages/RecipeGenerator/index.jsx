@@ -33,8 +33,10 @@ const RecipeGenerator = () => {
 
       const result = await response.json();
 
+      console.log(result);
+
       // Navigate to the PersonalizedRecipe component with the recipe data
-      navigate('/personalized-recipe', { state: { recipe: result.recipe } });
+      navigate('/personalized-recipe', { state: { recipe: result } });
 
     } catch (error) {
       console.error(error);
@@ -194,7 +196,7 @@ const RecipeGenerator = () => {
                   //type="button"
                   className="metro_btn-custom primary"
                   name="button"
-                  onClick={handleSubmit}
+                  //onClick={handleSubmit}
                   //onClick={(e) => (location = "/personalized-recipe")} //Remove it
                 >
                   Generate Recipe

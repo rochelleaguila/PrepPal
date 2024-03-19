@@ -32,6 +32,8 @@ def generate_basic_recipe():
 
     parsed_recipe["image_url"] = image_url
 
+    #print(parsed_recipe)
+
     return jsonify(parsed_recipe)
 
 @api.route('/hello', methods=['POST', 'GET'])

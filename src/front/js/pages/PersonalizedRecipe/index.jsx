@@ -4,7 +4,10 @@ import Breadcrumb from "../../component/Breadcrumb/index.jsx";
 
 const PersonalizedRecipe = () => {
   const location = useLocation();
-  const { recipe } = location.state?.recipe || {};
+  const { recipe } = location.state;
+
+  //console.log(location.state);
+  //console.log(recipe);
 
   const renderMacrosList = (macros) => {
     return Object.entries(macros).map(([key, value]) => (
