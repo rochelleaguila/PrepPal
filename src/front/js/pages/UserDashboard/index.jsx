@@ -6,10 +6,11 @@ import Preference from "../../component/Preference/index.jsx";
 import Create from "../../component/Create/index.jsx";
 import PersonalizedRecipe from "../PersonalizedRecipe/index.jsx";
 import RecipeGenerator from "../RecipeGenerator/index.jsx";
+import avatarPic from "../../../img/avatar.jpg";
 
 const UserDashboard = () => {
   const [activeTab, setActiveTab] = useState("create");
-  const [createSubView, setCreateSubView] = useState("")
+  const [createSubView, setCreateSubView] = useState("");
 
   const renderTabContent = () => {
     if (activeTab === "create") {
@@ -41,26 +42,73 @@ const UserDashboard = () => {
       <div className="section metro_post-single">
         <div className="container">
           <div className="row position-relative">
-            <img src="/assets/img/avatar.jpg" width="130px" className="rounded-circle avatar" alt="Avatar" />
+            <img
+              src={avatarPic}
+              style={{ width: "130px" }}
+              className="rounded-circle avatar"
+              alt="Avatar"
+            />
             <div className="col-lg-12 pt-4">
               <ul className="nav nav-tabs" id="myTab" role="tablist">
                 <li className="nav-item">
-                  <a className={`nav-link ${activeTab === "create" ? "active" : ""}`} id="create-tab" onClick={() => { setActiveTab("create"); setCreateSubView(""); }}>
+                  <a
+                    className={`nav-link ${
+                      activeTab === "create" ? "active" : ""
+                    }`}
+                    id="create-tab"
+                    onClick={() => {
+                      setActiveTab("create");
+                      setCreateSubView("");
+                    }}
+                  >
                     Create
                   </a>
                 </li>
                 <li className="nav-item">
-                  <a className={`nav-link ${activeTab === "menus" ? "active" : ""}`} id="menus-tab" data-toggle="tab" href="#menus" role="tab" aria-controls="menus" aria-selected={activeTab === "menus"} onClick={() => setActiveTab("menus")}>
+                  <a
+                    className={`nav-link ${
+                      activeTab === "menus" ? "active" : ""
+                    }`}
+                    id="menus-tab"
+                    data-toggle="tab"
+                    href="#menus"
+                    role="tab"
+                    aria-controls="menus"
+                    aria-selected={activeTab === "menus"}
+                    onClick={() => setActiveTab("menus")}
+                  >
                     Menus
                   </a>
                 </li>
                 <li className="nav-item">
-                  <a className={`nav-link ${activeTab === "saved" ? "active" : ""}`} id="saved-tab" data-toggle="tab" href="#saved" role="tab" aria-controls="saved" aria-selected={activeTab === "saved"} onClick={() => setActiveTab("saved")}>
+                  <a
+                    className={`nav-link ${
+                      activeTab === "saved" ? "active" : ""
+                    }`}
+                    id="saved-tab"
+                    data-toggle="tab"
+                    href="#saved"
+                    role="tab"
+                    aria-controls="saved"
+                    aria-selected={activeTab === "saved"}
+                    onClick={() => setActiveTab("saved")}
+                  >
                     Saved
                   </a>
                 </li>
                 <li className="nav-item">
-                  <a className={`nav-link ${activeTab === "preferences" ? "active" : ""}`} id="preferences-tab" data-toggle="tab" href="#preferences" role="tab" aria-controls="preferences" aria-selected={activeTab === "preferences"} onClick={() => setActiveTab("preferences")}>
+                  <a
+                    className={`nav-link ${
+                      activeTab === "preferences" ? "active" : ""
+                    }`}
+                    id="preferences-tab"
+                    data-toggle="tab"
+                    href="#preferences"
+                    role="tab"
+                    aria-controls="preferences"
+                    aria-selected={activeTab === "preferences"}
+                    onClick={() => setActiveTab("preferences")}
+                  >
                     Preferences
                   </a>
                 </li>
@@ -77,8 +125,6 @@ const UserDashboard = () => {
 };
 
 export default UserDashboard;
-
-
 
 /*
 import React, { useState } from "react";

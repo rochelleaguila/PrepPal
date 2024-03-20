@@ -1,12 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import bannerImage from "../../../img/banners/banner1.jpg";
 
 const Breadcrumb = (props) => {
   return (
     <>
       <div
         className="metro_subheader dark-overlay dark-overlay-2"
-        style={{ backgroundImage: "url(/assets/img/banners/1.jpg)" }}
+        style={{ backgroundImage: `url(${bannerImage})` }}
       >
         <div className="container">
           <div className="metro_subheader-inner">
