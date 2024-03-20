@@ -1,13 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./header.scss";
 import { Link, useNavigate } from "react-router-dom";
 import lightLogo from "../../../img/logo-light.png";
 import logo from "../../../img/logo.png";
+import { Context } from "../../store/appContext.js"
 
 const Header = () => {
   const [appearance, setAppearance] = useState("");
   const [username, setUsername] = useState("");
   const navigate = useNavigate();
+  const { store, actions } = useContext(Context);
+  const [isLoggedIn, setIsLoggedIn] = useState(!!store.access_token);
 
   const token = localStorage.getItem("token");
 
@@ -15,10 +18,14 @@ const Header = () => {
     const userPreference = getStoredPreference() || getSystemPreference();
     applyAppearance(userPreference);
 
+    setIsLoggedIn(!!store.access_token);
+
+    console.log("Logged in user: ", store.access_token)
+
     if (token) {
       fetchUsername()
     }
-  }, []);
+  }, [store.access_token]);
 
   const getStoredPreference = () => {
     return localStorage.getItem("appearance");
@@ -56,10 +63,12 @@ const Header = () => {
   };
 
   const fetchUsername = () => {
+    if (!store.access_token) return;
+
     fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${store.access_token}`,
         'Content-Type': 'application/json'
       }
     })
@@ -74,9 +83,9 @@ const Header = () => {
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
-    setUsername("");
-    navigate('/');
+    actions.auth.logout();
+    localStorage.removeItem("token")
+    navigate('/')
   }
 
   return (

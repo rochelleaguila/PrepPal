@@ -22,6 +22,17 @@ const injectContext = PassedComponent => {
 		);
 
 		useEffect(() => {
+			const token = localStorage.getItem('token');
+  			if (token) {
+    			setState((prev) => ({
+      				...prev,
+      				store: {
+        				...prev.store,
+        				access_token: token,
+      				},
+    			}));
+  			}
+
 			/**
 			 * EDIT THIS!
 			 * This function is the equivalent to "window.onLoad", it only runs once on the entire application lifetime

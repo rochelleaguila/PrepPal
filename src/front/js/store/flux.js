@@ -26,7 +26,8 @@ const getState = ({ getStore, getActions, setStore }) => {
         },
 
         login: async (username, password) => {
-          const resp = await fetch(`${process.env.BACKEND_URL}/api/token`, {
+          console.log("Attempting login with:", username, password);
+          const resp = await fetch(`${process.env.BACKEND_URL}/auth/login`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -39,14 +40,18 @@ const getState = ({ getStore, getActions, setStore }) => {
 
           if (resp.ok) {
             const data = await resp.json();
+            localStorage.setItem('token', data.access_token);
             setStore({
+              //...state.store,
               access_token: data.access_token,
               user: { username },
             });
           }
+          console.log("Token set in store:", getStore().access_token);
         },
 
         logout: () => {
+          localStorage.removeItem("token")
           setStore({
             access_token: null,
             user: null,

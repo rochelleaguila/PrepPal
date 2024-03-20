@@ -20,6 +20,7 @@ const PersonalizedRecipe = ({ showBreadcrumb = true }) => {
   */
 
   useEffect(() => {
+    console.log("Is LoggednIn?", isLoggedIn);
     if (isLoggedIn) {
       actions.fetchUserMenus().then(setUserMenus);
     }

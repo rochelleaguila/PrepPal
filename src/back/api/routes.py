@@ -94,8 +94,10 @@ def get_user_recipes():
 Below are all the routes connected to the menu, menus need a user to acces them
 '''
 @api.route('/user/menus', methods=['GET'])
+@jwt_required()
 def get_user_menus():
-    user_id = request.args.get(user_id)
+    #user_id = request.args.get(user_id)
+    user_id = get_jwt_identity()
     menus = Menu.query.filter_by(user_id=user_id).all()
     return jsonify([{"menu_id": menu.menu_id, "menu_name": menu.menu_name} for menu in menus]), 200
 

@@ -1,12 +1,27 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Context } from "../../store/appContext.js"
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-
+  const { actions } = useContext(Context);
   const navigate = useNavigate(); // For navigation after successful login
 
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      await actions.auth.login(username, password);
+      // If login is successful, navigate to the dashboard
+      console.log("Login successful:", username);
+      navigate('/user-dashboard');
+    } catch (error) {
+      console.error("Login error:", error);
+    }
+  };
+
+  /*
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -41,7 +56,7 @@ const Login = () => {
     } catch (error) {
       console.error("Login error:", error.message);
     }
-  };
+  };*/
 
   return (
     <>

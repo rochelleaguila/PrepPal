@@ -23,10 +23,10 @@ class Recipe(db.Model):
     recipe_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     title = db.Column(db.String(255), nullable=False)
-    summary = db.Column(db.String(500), )
+    summary = db.Column(db.String(500), nullable=False)
     instructions = db.Column(db.Text, nullable=False)
     ingredients = db.Column(db.Text, nullable=False)  # Consider adjusting based on your design
-    image_url = db.Column(db.String(255))  # Comment in code not supported
+    image_url = db.Column(db.String(255)) 
     is_saved = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
     updated_at = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp(), server_onupdate=db.func.current_timestamp())
