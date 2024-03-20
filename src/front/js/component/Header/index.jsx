@@ -1,17 +1,23 @@
 import React, { useEffect, useState } from "react";
 import "./header.scss";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import lightLogo from "../../../img/logo-light.png";
 import logo from "../../../img/logo.png";
 
 const Header = () => {
   const [appearance, setAppearance] = useState("");
+  const [username, setUsername] = useState("");
+  const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
 
   useEffect(() => {
     const userPreference = getStoredPreference() || getSystemPreference();
     applyAppearance(userPreference);
+
+    if (token) {
+      fetchUsername()
+    }
   }, []);
 
   const getStoredPreference = () => {
@@ -48,6 +54,30 @@ const Header = () => {
   const handleToggleClick = () => {
     toggleMode();
   };
+
+  const fetchUsername = () => {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log("Fetched user data:", data);
+      setUsername(data.username);
+    })
+    .catch(error => {
+      console.error("Error fetching user data:", error);
+    });
+  };
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    setUsername("");
+    navigate('/');
+  }
 
   return (
     <>
@@ -89,7 +119,7 @@ const Header = () => {
                   />
                 </address>
 
-                {token ? (
+                {!token ? (
                   <>
                     <Link to="/login" className="metro_btn-custom">
                       Login/Register
@@ -110,7 +140,7 @@ const Header = () => {
                     >
                       <Link className="dropdown-item" to="#">
                         <i className="fas fa-user"></i>
-                        Username
+                        {username}
                       </Link>
                       <hr />
                       <Link className="dropdown-item" to="/user-dashboard">
@@ -122,10 +152,10 @@ const Header = () => {
                         Settings
                       </Link>
                       <hr />
-                      <Link className="dropdown-item" to="#">
+                      <button className="dropdown-item" onClick={logout}>
                         <i className="fas fa-sign-out-alt"></i>
                         Logout
-                      </Link>
+                      </button>
                     </div>
                   </div>
                 )}

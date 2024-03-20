@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 const Preference = (props) => {
   const [formData, setFormData] = useState({
@@ -10,10 +10,36 @@ const Preference = (props) => {
     calories: '',
     cuisine: '',
     restriction: '',
+    others: '',
   });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent default form submission behavior
+
+    // Convert names to IDs here if necessary or directly send names and let Flask handle the conversion
+
+    try {
+      const response = await fetch('/api/preferences', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        console.log("Preferences saved successfully");
+        // Optionally reset form or give user feedback
+      } else {
+        console.error("Failed to save preferences");
+      }
+    } catch (error) {
+      console.error("Error submitting form", error);
+    }
   };
   /*
   const submissionData = {

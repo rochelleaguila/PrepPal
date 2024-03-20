@@ -28,7 +28,16 @@ const Login = () => {
 
       // Handle successful login
       console.log("Login successful:", data);
-      navigate("/user-dashboard"); // Redirect to a dashboard route
+
+      if (data.access_token) {
+        localStorage.setItem("token", data.access_token); // Store the token
+      } else {
+        console.error("No access token received");
+        return;
+      }
+
+      navigate('/user-dashboard'); // Redirect to dashboard route
+
     } catch (error) {
       console.error("Login error:", error.message);
     }

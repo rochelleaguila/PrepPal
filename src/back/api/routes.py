@@ -179,6 +179,24 @@ def save_preferences():
     db.session.commit()
     return jsonify({"message": "Preferences saved successfully"}), 200
 
+'''
+All functions related to the user
+'''
+@api.route('/user', methods=['GET'])
+@jwt_required()
+def get_user():
+    # Use Flask-JWT-Extended to get the current user's identity from the token
+    current_user_username = get_jwt_identity()
+
+    # Query the database for the user using the username
+    user = User.query.filter_by(username=current_user_username).first()
+
+    if user:
+        # If the user was found, return the username
+        return jsonify(username=user.username), 200
+    else:
+        # If no user was found with the provided identity, return an error
+        return jsonify({'message': 'User not found!'}), 404
 
 
 @api.route('/hello', methods=['POST', 'GET'])
