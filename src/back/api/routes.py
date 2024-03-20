@@ -2,11 +2,11 @@ from flask import Flask, request, jsonify, url_for, Blueprint
 from flask_cors import CORS
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-from back.models.models import db, User, Menu, Recipe, MenuRecipe
+from back.models.models import db, User, Menu, Recipe, MenuRecipe, Preference, DietStyle, Cuisine, DietRestriction
 from back.api.utils import generate_sitemap, APIException
 from back.database.database_functions import fetch_preferences
-from .spoonacular_api import search_recipes_advanced
-from .openai_api import basic_recipe_generation, parse_generated_recipe, generate_image_from_recipe
+from .spoonacular_api import fetch_spoonacular_recipes
+from .openai_api import basic_recipe_generation, parse_generated_recipe, generate_image_from_recipe, generate_recipe_preferences
 
 api = Blueprint('api', __name__)
 
@@ -36,6 +36,25 @@ def generate_basic_recipe():
     #print(parsed_recipe)
 
     return jsonify(parsed_recipe)
+
+@api.route('/generate_recipe_preferences/<int:user_id>', methods=['GET'])
+def generate_recipe(user_id):
+    preference = Preference.query.filter_by(user_id=user_id).first_or_404()
+
+    # Assuming DietStyle and Cuisine have a 'name' attribute
+    preferences = {
+        'diet_style_name': DietStyle.query.get(preference.diet_style_id).name,
+        'cuisine_name': Cuisine.query.get(preference.cuisine_id).name,
+        'diet_restriction_name': DietRestriction.query.get(preference.diet_restriction_id).name,
+        'serving_size': preference.serving_size,
+        'protein_g': str(preference.protein_g),
+        'fat_g': str(preference.fat_g),
+        'carbs_g': str(preference.carbs_g),
+        'calories': str(preference.calories)
+    }
+
+    recipe = generate_recipe_preferences(preferences)
+    return jsonify({"recipe": recipe}), 200
 
 '''
 Below are all the routes connected to recipes, all recipes need a user
@@ -138,8 +157,27 @@ def create_new_menu():
 
     return jsonify({"msg": "New menu created successfully", "menu_id": new_menu.menu_id}), 201
 
-
-
+'''
+All the routes connected to preferences
+'''
+@api.route('/user/preferences', methods=['POST'])
+def save_preferences():
+    data = request.json
+    new_preference = Preference(
+        user_id=data.get('user_id'),
+        diet_style_id=data.get('diet_style_id'),
+        diet_restriction_id=data.get('diet_restriction_id'),
+        serving_size=data.get('serving_size'),
+        protein_g=data.get('protein_g'),
+        fat_g=data.get('fat_g'),
+        carbs_g=data.get('carbs_g'),
+        calories=data.get('calories'),
+        cuisine_id=data.get('cuisine_id'),
+        other_info=data.get('other_info')
+    )
+    db.session.add(new_preference)
+    db.session.commit()
+    return jsonify({"message": "Preferences saved successfully"}), 200
 
 
 

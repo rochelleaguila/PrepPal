@@ -16,7 +16,7 @@ const UserDashboard = () => {
     if (activeTab === "create") {
       switch (createSubView) {
         case "generate":
-          return <PersonalizedRecipe />;
+          return <PersonalizedRecipe showBreadcrumb={false} />;
         case "personalized":
           return <Preference />;
         default:

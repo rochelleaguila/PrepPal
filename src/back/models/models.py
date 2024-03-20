@@ -23,6 +23,7 @@ class Recipe(db.Model):
     recipe_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     title = db.Column(db.String(255), nullable=False)
+    summary = db.Column(db.String(500), )
     instructions = db.Column(db.Text, nullable=False)
     ingredients = db.Column(db.Text, nullable=False)  # Consider adjusting based on your design
     image_url = db.Column(db.String(255))  # Comment in code not supported

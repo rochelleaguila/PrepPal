@@ -12,6 +12,9 @@ openai.api_key = OPENAI_KEY
 
 #client = OpenAI()
 
+'''
+Function below is used to parse the text given by openai to better fit parameters and recipe layout
+'''
 def parse_generated_recipe(recipe_text):
     # Define markers that indicate the start of each section
     title_marker = "Title:"
@@ -59,28 +62,36 @@ def basic_recipe_generation(diet_style, cuisine, health_focus=None):
         print(f"Error in recipe generation: {e}")
         return "Could not generate a recipe at this time."
 
-def generate_custom_recipe(user_preferences, base_recipes_titles):
+def generate_recipe_preferences(preferences):
     """
-    Generate a custom recipe using OpenAI, based on user preferences including serving size,
-    diet, intolerances, ingredients, and cuisine, and inspired by base recipe titles from Spoonacular.
+    Generates a detailed recipe based on comprehensive user preferences using OpenAI GPT-4.
+    :param preferences: A dictionary containing user's preferences including diet style, cuisine, serving size, and macros.
+    :return: Generated recipe as a string.
     """
-    # Constructing the prompt with user preferences, serving size, and base recipe titles
-    preferences_summary = ", ".join([f"{key.replace('_', ' ').capitalize()}: {value}" for key, value in user_preferences.items() if value])
-    base_recipes_str = ", ".join(base_recipes_titles)
-    prompt = (f"Create a unique recipe for {user_preferences.get('serving_size', 'a few')} servings "
-              f"considering the following preferences: {preferences_summary}. "
-              f"Use inspiration from these recipes: {base_recipes_str}.")
+    diet_style = preferences.get('diet_style_name', 'any diet style').lower()
+    cuisine = preferences.get('cuisine_name', 'any cuisine').lower()
+    serving_size = preferences.get('serving_size', 1)
+    diet_restriction = preferences.get('diet_restriction', 'any restriction').lower()
+    protein_g = preferences.get('protein_g', 'any')
+    fat_g = preferences.get('fat_g', 'any')
+    carbs_g = preferences.get('carbs_g', 'any')
+    calories = preferences.get('calories', 'any')
 
-    response = openai.chat.completions.create(
-        engine="gpt-4",  # Change to the latest GPT-4 engine once available
-        prompt=prompt,
-        temperature=0.7,
-        max_tokens=1024,
-        top_p=1.0,
-        frequency_penalty=0.5,
-        presence_penalty=0.0
-    )
-    return response.choices[0].text.strip()
+    prompt = f"Create a detailed recipe for a serving size of {serving_size}, targeting {calories} calories, with {protein_g}g of protein, {fat_g}g of fat, and {carbs_g}g of carbs. The recipe should fit a {diet_style} diet, have {cuisine} influences, take into account seriously the {diet_restriction} and include a title, summary, list of ingredients, cooking instructions, and detailed macros."
+    prompt += "\n\nTitle:\n\nSummary:\n\nIngredients:\n\nInstructions:\n\nMacros:\n- Calories: Cal\n- Sugar: g\n- Protein: g\n- Fat: g\n- Carbs: g"
+
+    try:
+        response = openai.chat.completions.create(
+            model="gpt-4",
+            messages=[{"role": "system", "content": prompt}]
+        )
+        # Adjust according to the OpenAI's response structure
+        recipe_content = response.choices[0].message['content']
+        return recipe_content.strip()
+    except Exception as e:
+        print(f"Error in detailed recipe generation: {e}")
+        return "Could not generate a recipe at this time."
+
 
 
 def generate_image_from_recipe(recipe_description):

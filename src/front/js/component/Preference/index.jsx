@@ -1,6 +1,62 @@
 import React from "react";
 
 const Preference = (props) => {
+  const [formData, setFormData] = useState({
+    dietStyle: '',
+    servingSize: '',
+    protein: '',
+    fat: '',
+    carbs: '',
+    calories: '',
+    cuisine: '',
+    restriction: '',
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+  /*
+  const submissionData = {
+    // Assuming you convert dietStyle to its corresponding ID etc.
+    // This conversion requires you to have predefined mappings or fetch mappings from your API
+    diet_style_id: convertDietStyleToID(formData.dietStyle),
+    serving_size: formData.servingSize,
+    protein_g: formData.protein,
+    fat_g: formData.fat,
+    carbs_g: formData.carbs,
+    calories: formData.calories,
+    cuisine_id: convertCuisineToID(formData.cuisine),
+    diet_restriction_id: convertRestrictionToID(formData.restriction),
+    other_info: JSON.stringify({
+      sugar: formData.sugar,
+      others: formData.others,
+      allergies: formData.allergies,
+      health_condition: formData.health_condition,
+    }),
+  };
+
+  try {
+    const response = await fetch('/api/preferences', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(submissionData),
+    });
+
+    if (response.ok) {
+      // Handle successful preference save
+      console.log("Preferences saved successfully");
+    } else {
+      // Handle errors
+      console.error("Failed to save preferences");
+    }
+  } catch (error) {
+    console.error("Error submitting form", error);
+  }
+};*/
+
+
   return (
     <>
       <div className="container">
