@@ -98,10 +98,19 @@ Below are all the routes connected to the menu, menus need a user to acces them
 @api.route('/user/menus', methods=['GET'])
 @jwt_required()
 def get_user_menus():
-    #user_id = request.args.get(user_id)
     user_id = get_jwt_identity()
     menus = Menu.query.filter_by(user_id=user_id).all()
-    return jsonify([{"menu_id": menu.menu_id, "menu_name": menu.menu_name} for menu in menus]), 200
+    menus_data = []
+    for menu in menus:
+        menu_data = {
+            "menu_id": menu.menu_id,
+            "menu_name": menu.menu_name,
+            "menu_description": menu.menu_description,
+            "recipes": [recipe.to_dict() for recipe in menu.menu_recipes]
+        }
+        menus_data.append(menu_data)
+    return jsonify(menus_data), 200
+
 
 @api.route('/menus/<int:menu_id>/add_recipe', methods=['POST'])
 @jwt_required()
@@ -190,10 +199,10 @@ All functions related to the user
 @jwt_required()
 def get_user():
     # Use Flask-JWT-Extended to get the current user's identity from the token
-    current_user_username = get_jwt_identity()
+    current_user_id = get_jwt_identity()
 
     # Query the database for the user using the username
-    user = User.query.filter_by(username=current_user_username).first()
+    user = User.query.filter_by(user_id=current_user_id).first()
 
     if user:
         # If the user was found, return the username

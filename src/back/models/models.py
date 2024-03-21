@@ -26,11 +26,25 @@ class Recipe(db.Model):
     summary = db.Column(db.String(500), nullable=False)
     instructions = db.Column(db.Text, nullable=False)
     ingredients = db.Column(db.Text, nullable=False)  # Consider adjusting based on your design
-    image_url = db.Column(db.String(255)) 
+    image_url = db.Column(db.String(255))
     is_saved = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
     updated_at = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp(), server_onupdate=db.func.current_timestamp())
     user = db.relationship('User', backref=db.backref('recipes', lazy=True))
+
+    def to_dict(self):
+        return {
+            'recipe_id': self.recipe_id,
+            'user_id': self.user_id,
+            'title': self.title,
+            'summary': self.summary,
+            'instructions': self.instructions.split('\n') if self.instructions else [],
+            'ingredients': self.ingredients.split('\n') if self.ingredients else [],  # Assuming ingredients are newline-separated
+            'image_url': self.image_url,
+            'is_saved': self.is_saved,
+            'created_at': self.created_at.isoformat(),  # Convert datetime to ISO 8601 string
+            'updated_at': self.updated_at.isoformat(),
+        }
 
 class Menu(db.Model):
     __tablename__ = 'menus'

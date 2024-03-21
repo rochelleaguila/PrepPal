@@ -25,7 +25,7 @@ def is_valid_email(email):
 @jwt_required(refresh=True)
 def refresh():
     current_user = get_jwt_identity()
-    new_access_token = create_access_token(identity=current_user)
+    new_access_token = create_access_token(identity=current_user, fresh=False)
     return jsonify(access_token=new_access_token), 200
 
 @auth.route('/login', methods=['POST'])
@@ -34,8 +34,8 @@ def user_login():
     password = request.json.get('password', None)
     user = User.query.filter_by(username=username).first()
     if user and check_password_hash(user.password_hash, password):
-        access_token = create_access_token(identity=username)
-        refresh_token = create_refresh_token(identity=username)
+        access_token = create_access_token(identity=user.user_id)
+        refresh_token = create_refresh_token(identity=user.user_id)
         return jsonify(access_token=access_token, refresh_token=refresh_token), 200
     return jsonify({"msg": "Invalid username or password"}), 401
 

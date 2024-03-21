@@ -100,9 +100,12 @@ def generate_image_from_recipe(recipe_description):
     Generate an image based on a recipe description using OpenAI's DALL·E.
     """
     try:
+        # Add more specific details to the prompt for a realistic yet creative output
+        prompt = f"A realistic depiction of '{recipe_description}'."
+
         response = openai.images.generate(
             model="dall-e-3",
-            prompt=recipe_description,
+            prompt=prompt,
             n=1,  # Number of images to generate
             size="1024x1024"
         )

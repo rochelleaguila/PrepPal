@@ -1,19 +1,35 @@
 const getState = ({ getStore, getActions, setStore }) => {
   const refreshAccessToken = async () => {
-    // Logic to refresh access token
-    // This could involve calling a refresh token endpoint and updating the store
-    const newTokenResponse = await fetch(`${process.env.BACKEND_URL}/auth/refresh`, {
-      method: "POST",
-      // Include refresh token if needed
-    });
-    const newTokenData = await newTokenResponse.json();
-    localStorage.setItem('token', newTokenData.access_token);
-    setStore({
-      ...getStore(),
-      access_token: newTokenData.access_token,
-    });
-    return newTokenData.access_token;
+    const refreshToken = localStorage.getItem('refresh_token');
+    if (!refreshToken) {
+      console.error("No refresh token available.");
+      // Consider redirecting to login
+      return null;
+    }
+    try {
+      const response = await fetch(`${process.env.BACKEND_URL}/auth/refresh`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${refreshToken}`, // Use refreshToken here
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to refresh access token');
+      }
+      const data = await response.json();
+      localStorage.setItem('token', data.access_token);
+      setStore((prevStore) => ({
+        ...prevStore,
+        access_token: data.access_token,
+      }));
+      return data.access_token;
+    } catch (error) {
+      console.error("Error refreshing access token:", error);
+      // Handle error, potentially redirecting to login
+    }
   };
+
 
   return {
     store: {
@@ -58,9 +74,11 @@ const getState = ({ getStore, getActions, setStore }) => {
           if (resp.ok) {
             const data = await resp.json();
             localStorage.setItem('token', data.access_token);
+            localStorage.setItem('refresh_token', data.refresh_token)
             setStore({
               //...state.store,
               access_token: data.access_token,
+              refresh_token: data.refresh_token,
               user: { username },
             });
           }
@@ -69,8 +87,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 
         logout: () => {
           localStorage.removeItem("token")
+          localStorage.removeItem("refresh_token")
           setStore({
             access_token: null,
+            refresh_token: null,
             user: null,
           });
         },
@@ -89,13 +109,14 @@ const getState = ({ getStore, getActions, setStore }) => {
             if (!resp.ok) throw new Error("Failed to fetch user menus.");
             const menus = await resp.json();
             setStore({ userMenus: menus });
+
             return menus; // Returning menus to update state in component
           } catch (error) {
             console.error("Error fetching user menus:", error);
           }
         },
 
-        createNewMenu: async (recipe) => {
+        createNewMenu: async ({ menuName, menuDescription, recipes }) => {
           // Assuming you might want to create a menu with this recipe in it
           try {
             const resp = await fetch(`${process.env.BACKEND_URL}/api/menus/create`, {
@@ -105,8 +126,9 @@ const getState = ({ getStore, getActions, setStore }) => {
                 "Authorization": `Bearer ${getStore().access_token}`,
               },
               body: JSON.stringify({
-                menuName: "New Menu", // Example static name, consider allowing user input
-                recipes: [recipe.id] // Assuming the recipe has an ID
+                menuName, // Example static name, consider allowing user input
+                menuDescription,
+                recipes: recipes.map(recipe => recipe.id) // Assuming the recipe has an ID
               }),
             });
             if (!resp.ok) throw new Error("Failed to create new menu.");
@@ -139,39 +161,74 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
         },
 
-        //actions related to user
-        fetchUsername: () => {
+        fetchUserRecipes: async () => {
           const store = getStore();
           if (!store.access_token) return;
 
-          fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user`, {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${store.access_token}`,
-              'Content-Type': 'application/json',
-            },
-          })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error('Network response was not ok');
-            }
-            return response.json();
-          })
-          .then(data => {
-            console.log("Fetched user data:", data);
-            // Assuming you want to update the username in your store
-            setStore({
-              ...store,
-              user: {
-                ...store.user,
-                username: data.username,
+          try {
+            const response = await fetch(`${process.env.BACKEND_URL}/api/user/recipes`, {
+              method: "GET",
+              headers: {
+                'Authorization': `Bearer ${store.access_token}`,
+                'Content-Type': 'application/json',
               },
             });
-          })
-          .catch(error => {
-            console.error("Error fetching user data:", error);
+            if (!response.ok) {
+              throw new Error('Failed to fetch user recipes');
+            }
+            const recipes = await response.json();
+            console.log("Fetched user recipes:", recipes);
+
+            // Update the store with the fetched recipes
+            setStore({
+              ...store,
+              userRecipes: recipes,
+            });
+          } catch (error) {
+            console.error("Error fetching user recipes:", error);
+          }
+        },
+
+        //actions related to user
+        fetchUsername: async () => {
+          const store = getStore();
+          if (!store.access_token) return;
+
+          const attemptFetch = async (token) => {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user`, {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+            });
+            return response;
+          };
+
+          let response = await attemptFetch(store.access_token);
+          if (response.status === 401) {
+            // Token might be expired, attempt to refresh
+            const newToken = await actions.auth.refreshAccessToken(); // Ensure you have such a function
+            if (newToken) {
+              response = await attemptFetch(newToken); // Retry with the new token
+            }
+          }
+
+          if (!response.ok) {
+            throw new Error('Failed to fetch user data after attempting token refresh.');
+          }
+
+          const data = await response.json();
+          console.log("Fetched user data:", data);
+          setStore({
+            ...store,
+            user: {
+              ...store.user,
+              username: data.username,
+            },
           });
         },
+
 
         // Example action to use the access token for an authenticated request
         getProtectedData: async () => {

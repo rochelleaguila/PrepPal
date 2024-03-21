@@ -24,7 +24,7 @@ const PersonalizedRecipe = ({ showBreadcrumb = true }) => {
 
     console.log("Is LoggednIn?", isLoggedIn);
     if (isLoggedIn) {
-      actions.fetchUserMenus().then(menus => {
+      actions.auth.fetchUserMenus().then(menus => {
         if (isMounted) setUserMenus(menus);
       });
     }
@@ -104,6 +104,7 @@ const PersonalizedRecipe = ({ showBreadcrumb = true }) => {
     const macroLines = recipe.macros.split('\n');
     return macroLines.map((line, index) => {
       const [key, value] = line.split(':');
+      if (!key || !value) return null; // Check if key or value is undefined
       return <li key={index}>{key.trim()} <span>{value.trim()}</span></li>;
     });
   };
