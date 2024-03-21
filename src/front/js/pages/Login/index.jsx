@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Context } from "../../store/appContext.js"
 
 const Login = () => {
@@ -7,15 +7,21 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const { actions } = useContext(Context);
   const navigate = useNavigate(); // For navigation after successful login
+  const location = useLocation();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
       await actions.auth.login(username, password);
-      // If login is successful, navigate to the dashboard
       console.log("Login successful:", username);
-      navigate('/user-dashboard');
+
+      // Check if there's a redirect target and recipe data in the navigation state
+      if (location.state && location.state.from === 'personalizedRecipe' && location.state.recipe) {
+        navigate('/personalized-recipe', { state: { recipe: location.state.recipe } });
+      } else {
+        navigate('/user-dashboard');
+      }
     } catch (error) {
       console.error("Login error:", error);
     }

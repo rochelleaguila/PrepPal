@@ -20,12 +20,16 @@ const Header = () => {
 
     setIsLoggedIn(!!store.access_token);
 
-    console.log("Logged in user: ", store.access_token)
-
-    if (token) {
-      fetchUsername()
+    if (store.access_token) {
+      actions.auth.fetchUsername();
     }
-  }, [store.access_token]);
+  }, [store.access_token, actions.auth]);
+
+  useEffect(() => {
+    if (store.user && store.user.username) {
+      setUsername(store.user.username);
+    }
+  }, [store.user]);
 
   const getStoredPreference = () => {
     return localStorage.getItem("appearance");
@@ -62,6 +66,7 @@ const Header = () => {
     toggleMode();
   };
 
+  /*
   const fetchUsername = () => {
     if (!store.access_token) return;
 
@@ -80,7 +85,7 @@ const Header = () => {
     .catch(error => {
       console.error("Error fetching user data:", error);
     });
-  };
+  };*/
 
   const logout = () => {
     actions.auth.logout();

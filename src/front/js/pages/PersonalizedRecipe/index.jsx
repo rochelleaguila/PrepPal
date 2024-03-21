@@ -20,10 +20,18 @@ const PersonalizedRecipe = ({ showBreadcrumb = true }) => {
   */
 
   useEffect(() => {
+    let isMounted = true;
+
     console.log("Is LoggednIn?", isLoggedIn);
     if (isLoggedIn) {
-      actions.fetchUserMenus().then(setUserMenus);
+      actions.fetchUserMenus().then(menus => {
+        if (isMounted) setUserMenus(menus);
+      });
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, [isLoggedIn, actions]);
 
   const handleSaveRecipe = () => {
@@ -55,11 +63,11 @@ const PersonalizedRecipe = ({ showBreadcrumb = true }) => {
 
   const handleSaveOptions = () => {
     if (!isLoggedIn) {
-      navigate('/register'); // Show login/register options for non-logged-in users
+      navigate('/register', { state: { fromRecipe: true, recipe }}); // Show login/register options for non-logged-in users
     } else {
       // For logged-in users, directly proceed to show save options or perform the save action
       // Optionally toggle showing save options for logged-in users or directly invoke save logic
-      console.log("Implement save recipe logiv") // Assuming you have a state to manage this for logged-in users
+      console.log("Implement save recipe logic") // Assuming you have a state to manage this for logged-in users
     }
   };
 
@@ -123,9 +131,11 @@ const PersonalizedRecipe = ({ showBreadcrumb = true }) => {
                   <div className="col-md-8">
                     <h2 className="entry-title">{recipe.title || 'Generated Recipe'}</h2>
                     <div className="entry-content">
+                      {/*
                       <span className="metro_post-meta">
                         <a href="#"><i className="far fa-user" /> Mic</a>
                       </span>
+                      */}
                       <p>{recipe.summary || 'A delightful recipe awaits'}</p>
                       <div className="row">
                         <div className="col-12">
