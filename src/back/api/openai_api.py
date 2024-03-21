@@ -47,7 +47,8 @@ def parse_generated_recipe(recipe_text):
 
 
 def basic_recipe_generation(diet_style, cuisine, health_focus=None):
-    prompt = f"Create a title, a brief summary, list of ingredients, cooking instructions, and macros for a {diet_style.lower()} recipe that has {cuisine.lower()} influences"
+    prompt = f"Create a title, a brief summary, list of ingredients, cooking instructions, and macros for a recipe suitable for a {diet_style.lower()} diet, incorporating {cuisine.lower()} cuisine"
+    #prompt = f"Create a title, a brief summary, list of ingredients, cooking instructions, and macros for a {diet_style.lower()} recipe that has {cuisine.lower()} influences"
     if health_focus:
         prompt += f" and focuses on being {health_focus.lower()}."
     prompt += "\n\nTitle:\n\nSummary:\n\nIngredients:\n\nInstructions:\n\nMacros:\n- Calories: Cal\n- Sugar: g\n- Protein: g\n- Fat: g\n- Carbs: g"

@@ -20,6 +20,8 @@ def generate_basic_recipe():
     # Extract data from the frontend
     data = request.json
 
+    print("Received request data: ", data)
+
     diet_style = data.get("dietStyle")
     cuisine = data.get("cuisine")
     health_focus = data.get("health_focus")

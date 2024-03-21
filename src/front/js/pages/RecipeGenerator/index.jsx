@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Breadcrumb from "../../component/Breadcrumb/index.jsx";
+import Loading from "../Loading/index.jsx"
 
 const RecipeGenerator = () => {
   const [dietStyle, setDietStyle] = useState('');
   const [healthFocus, setHealthFocus] = useState('');
   const [cuisine, setCuisine] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   let navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -14,12 +16,15 @@ const RecipeGenerator = () => {
     const formData = new FormData(document.querySelector('form'));
     const data = Object.fromEntries(formData.entries());
     */
+   setIsLoading(true);
     const data = {
       dietStyle,
       cuisine,
       health_focus: healthFocus,
     };
     // POST request to create basic recipe
+    console.log("Submitting data: ", data);
+
     try {
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/generate-basic-recipe`, {
         method: 'POST',
@@ -40,14 +45,28 @@ const RecipeGenerator = () => {
 
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
 
   };
 
+  if (isLoading) {
+    return <Loading />
+  }
+
   const handleRadioButtonChange = (event) => {
     const { name, value } = event.target;
-    if (name === "dietStyle") setDietStyle(value);
-    if (name === "health_focus") setHealthFocus(value);
+
+    if (name === "dietStyle") {
+      setDietStyle(value);
+      console.log("Updated dietStyle: ", value);
+    }
+    if (name === "health_focus") {
+      setHealthFocus(value);
+      console.log("Updated health_focus: ", value)
+
+    }
   }
 
   return (
@@ -70,59 +89,61 @@ const RecipeGenerator = () => {
                   <h6>Make your selections</h6>
                 </div>
                 <div className="row px-3 pb-3">
-                  <div className="btn-group-toggle" data-toggle="buttons">
-                    <label className="btn btn-danger btn-lg py-3 px-4 mr-3 active">
+                  <div className="btn-group-toggle" /*data-toggle="buttons"*/>
+                    <label className={`btn btn-danger btn-lg py-3 px-4 mr-3 ${dietStyle === 'omni' ? 'active' : ''}`}>
                       <input
                         type="radio"
                         name="dietStyle"
                         id="omni"
                         autoComplete="off"
-                        value="Omni"
+                        value="omni"
                         onChange={handleRadioButtonChange}
+                        //checked={dietStyle === 'omni'}
                         //defaultChecked=""
                       />
                       Omni
                     </label>
-                    <label className="btn btn-danger btn-lg py-3 px-4 mr-3">
+                    <label className={`btn btn-danger btn-lg py-3 px-4 mr-3 ${dietStyle === 'carnivore' ? 'active' : ''}`}>
                       <input
                         type="radio"
                         name="dietStyle"
                         id="carnivore"
                         autoComplete="off"
-                        value="Carnivore"
+                        value="carnivore"
                         onChange={handleRadioButtonChange}
                       />
                       Carnivore
                     </label>
-                    <label className="btn btn-danger btn-lg py-3 px-4 mr-3">
+                    <label className={`btn btn-danger btn-lg py-3 px-4 mr-3 ${dietStyle === 'vegan' ? 'active' : ''}`}>
                       <input
                         type="radio"
                         name="dietStyle"
                         id="vegan"
                         autoComplete="off"
-                        value="Vegan"
+                        value="vegan"
                         onChange={handleRadioButtonChange}
+                        onClick={() => console.log('Vegan clicked')}
                       />
                       Vegan
                     </label>
-                    <label className="btn btn-danger btn-lg py-3 px-4 mr-3">
+                    <label className={`btn btn-danger btn-lg py-3 px-4 mr-3 ${dietStyle === 'vegetarian' ? 'active' : ''}`}>
                       <input
                         type="radio"
                         name="dietStyle"
                         id="vegetarian"
                         autoComplete="off"
-                        value="Vegetarian"
+                        value="vegetarian"
                         onChange={handleRadioButtonChange}
                       />
                       Vegetarian
                     </label>
-                    <label className="btn btn-danger btn-lg py-3 px-4 mr-3">
+                    <label className={`btn btn-danger btn-lg py-3 px-4 mr-3 ${dietStyle === 'keto' ? 'active' : ''}`}>
                       <input
                         type="radio"
                         name="dietStyle"
                         id="keto"
                         autoComplete="off"
-                        value="Keto"
+                        value="keto"
                         onChange={handleRadioButtonChange}
                       />
                       Keto
@@ -130,47 +151,47 @@ const RecipeGenerator = () => {
                   </div>
                 </div>
                 <div className="row px-3 pb-3">
-                  <div className="btn-group-toggle" data-toggle="buttons">
-                    <label className="btn btn-danger btn-lg py-3 px-4 mr-3 active">
+                  <div className="btn-group-toggle">
+                    <label className={`btn btn-danger btn-lg py-3 px-4 mr-3 ${healthFocus === 'healthy' ? 'active' : ''}`}>
                       <input
                         type="radio"
                         name="health_focus"
                         id="protein10"
                         autoComplete="off"
-                        value="Healthy"
+                        value="healthy"
                         onChange={handleRadioButtonChange}
                       />
                       Healthy
                     </label>
-                    <label className="btn btn-danger btn-lg py-3 px-4 mr-3">
+                    <label className={`btn btn-danger btn-lg py-3 px-4 mr-3 ${healthFocus === 'hearty' ? 'active' : ''}`}>
                       <input
                         type="radio"
                         name="health_focus"
                         id="protein11"
                         autoComplete="off"
-                        value="Hearty"
+                        value="hearty"
                         onChange={handleRadioButtonChange}
                       />
                       Hearty
                     </label>
-                    <label className="btn btn-danger btn-lg py-3 px-4 mr-3">
+                    <label className={`btn btn-danger btn-lg py-3 px-4 mr-3 ${healthFocus === 'low carb' ? 'active' : ''}`}>
                       <input
                         type="radio"
                         name="health_focus"
                         id="protein12"
                         autoComplete="off"
-                        value="Low Carb"
+                        value="low carb"
                         onChange={handleRadioButtonChange}
                       />
                       Low Carb
                     </label>
-                    <label className="btn btn-danger btn-lg py-3 px-4 mr-3">
+                    <label className={`btn btn-danger btn-lg py-3 px-4 mr-3 ${healthFocus === 'whole foods' ? 'active' : ''}`}>
                       <input
                         type="radio"
                         name="health_focus"
                         id="protein13"
                         autoComplete="off"
-                        value="Whole Foods"
+                        value="whole foods"
                         onChange={handleRadioButtonChange}
                       />
                       Whole Foods
@@ -180,7 +201,7 @@ const RecipeGenerator = () => {
 
                 <div className="form-group">
                   <select className="form-control" name="cuisine" id="cuisine" value={cuisine} onChange={e => setCuisine(e.target.value)} >
-                    <option value="" disabled selected>
+                    <option value="" disabled>
                       Select Cuisine
                     </option>
                     <option value="Chinese">Chinese</option>
