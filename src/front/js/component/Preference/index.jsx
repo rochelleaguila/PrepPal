@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { Context } from "../../store/appContext.js";
 
-const Preference = (props) => {
+const Preference = () => {
+  const { actions } = useContext(Context);
   const [formData, setFormData] = useState({
+    user_id: '', // Assuming you have a mechanism to fill this in, such as from a user context or directly stored in the form
     dietStyle: '',
     servingSize: '',
     protein: '',
@@ -11,6 +14,8 @@ const Preference = (props) => {
     cuisine: '',
     restriction: '',
     others: '',
+    allergies: '',
+    health_condition: '',
   });
 
   const handleChange = (e) => {
@@ -18,70 +23,31 @@ const Preference = (props) => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
+    e.preventDefault();
+    // Convert formData to the format your backend expects
+    const submissionData = {
+      ...formData,
+      other_info: JSON.stringify({
+        others: formData.others,
+        allergies: formData.allergies,
+        health_condition: formData.health_condition,
+      })
+    };
 
-    // Convert names to IDs here if necessary or directly send names and let Flask handle the conversion
+    // Remove keys that are directly included in other_info
+    delete submissionData.others;
+    delete submissionData.allergies;
+    delete submissionData.health_condition;
 
     try {
-      const response = await fetch('/api/preferences', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        console.log("Preferences saved successfully");
-        // Optionally reset form or give user feedback
-      } else {
-        console.error("Failed to save preferences");
-      }
-    } catch (error) {
-      console.error("Error submitting form", error);
-    }
-  };
-  /*
-  const submissionData = {
-    // Assuming you convert dietStyle to its corresponding ID etc.
-    // This conversion requires you to have predefined mappings or fetch mappings from your API
-    diet_style_id: convertDietStyleToID(formData.dietStyle),
-    serving_size: formData.servingSize,
-    protein_g: formData.protein,
-    fat_g: formData.fat,
-    carbs_g: formData.carbs,
-    calories: formData.calories,
-    cuisine_id: convertCuisineToID(formData.cuisine),
-    diet_restriction_id: convertRestrictionToID(formData.restriction),
-    other_info: JSON.stringify({
-      sugar: formData.sugar,
-      others: formData.others,
-      allergies: formData.allergies,
-      health_condition: formData.health_condition,
-    }),
-  };
-
-  try {
-    const response = await fetch('/api/preferences', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(submissionData),
-    });
-
-    if (response.ok) {
-      // Handle successful preference save
+      await actions.savePreferences(submissionData);
       console.log("Preferences saved successfully");
-    } else {
-      // Handle errors
-      console.error("Failed to save preferences");
+      // Reset form or show a success message
+    } catch (error) {
+      console.error("Failed to save preferences", error);
+      // Handle error, possibly showing an error message to the user
     }
-  } catch (error) {
-    console.error("Error submitting form", error);
-  }
-};*/
-
+  };
 
   return (
     <>
@@ -95,6 +61,7 @@ const Preference = (props) => {
                 action=""
                 method="post"
                 encType="multipart/form-data"
+                onSubmit={handleSubmit}
               >
                 <div className="form-group">
                   <div className="btn-group-toggle" data-toggle="buttons">
@@ -159,7 +126,7 @@ const Preference = (props) => {
                 <h6>Serving Size</h6>
                 <div className="form-group">
                   <select className="form-control" name="servingSize" id="servingSize">
-                    <option value="" disabled selected>Select Serving Size</option>
+                    <option value="" disabled>Select Serving Size</option>
                     {[...Array(20).keys()].map(number => (
                     <option key={number + 1} value={number + 1}>{number + 1}</option>
                     ))}
@@ -216,7 +183,7 @@ const Preference = (props) => {
                 <h6>Cuisine types</h6>
                 <div className="form-group">
                   <select className="form-control" name="cuisine" id="cuisine">
-                    <option value="" disabled selected>
+                    <option value="" disabled>
                       Select Cuisine
                     </option>
                     <option value="Chinese">Chinese</option>

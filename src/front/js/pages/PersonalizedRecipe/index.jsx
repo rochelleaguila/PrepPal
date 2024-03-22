@@ -7,18 +7,20 @@ const PersonalizedRecipe = ({ showBreadcrumb = true }) => {
   const { store, actions } = useContext(Context);
   const navigate = useNavigate();
   const location = useLocation();
-  const { recipe } = location.state;
-
+  const { recipe: initialRecipe } = location.state;
   const isLoggedIn = !!store.access_token;
   const [userMenus, setUserMenus] = useState([]);
-
   const [showSaveOptions, setShowSaveOptions] = useState(false)
-  const [showOptions, setShowOptions] =useState(false);
+  const [newMenuName, setNewMenuName] = useState("")
+  const [newMenuDescription, setNewMenuDescription] = useState("");
+  const [showMenuCreation, setShowMenuCreation] = useState(false);
+  const [showCreateMenuForm, setShowCreateMenuForm] = useState(false);
+  const [savedRecipe, setSavedRecipe] = useState(null);
+  const [showSaveToMenuOptions, setShowSaveToMenuOptions] = useState(false);
+  const [selectedMenuId, setSelectedMenuId] = useState(null);
 
   /*console.log(location.state);
   //console.log(recipe);
-  */
-
   useEffect(() => {
     let isMounted = true;
 
@@ -32,76 +34,126 @@ const PersonalizedRecipe = ({ showBreadcrumb = true }) => {
     return () => {
       isMounted = false;
     };
-  }, [isLoggedIn, actions]);
+  }, [isLoggedIn, actions.auth]);*/
 
-  const handleSaveRecipe = () => {
-    if (!isLoggedIn) {
-      //navigate('/login'); return;
-      console.log("Save recipe logic for logged-in users goes here.");
+  useEffect(() => {
+    if (store.access_token) {
+      actions.auth.fetchUserMenus().then(setUserMenus);
     }
-    // Implement saving recipe logic here for logged-in users
-    actions.saveRecipe(recipe);
+  }, [store.access_token, actions.auth]);
+
+  const handleSaveRecipe = async () => {
+    if (!store.access_token) {
+      navigate('/login');
+      return;
+    }
+    try {
+      const recipeId = await actions.auth.saveRecipe(initialRecipe); // Save and get ID
+      const fullRecipe = await actions.auth.fetchRecipeById(recipeId); // Fetch the full recipe details
+      console.log("Recipe fetched successfully:", fullRecipe);
+      setSavedRecipe(fullRecipe); // Update state with the fetched recipe
+      setShowSaveOptions(true); // Show options to save to menus etc.
+    } catch (error) {
+      console.error("Error during recipe save/fetch:", error);
+    }
   };
 
-  const handleSaveToMenu = (menu_id) => {
-    actions.saveToMenu(recipe, menu_id);
-  }
+  const handleSaveToSelectedMenu = async () => {
+    if (!selectedMenuId) {
+      console.error("No menu selected.");
+      return;
+    }
+    await actions.auth.addRecipeToMenu(selectedMenuId, savedRecipe.recipe_id);
+    // Additional logic to handle success or failure
+  };
 
-  const handleCreateNewMenu = () => {
-    actions.createNewMenu(recipe);
-  }
-
-  const handleShowOptions = () => {
-    if (!isLoggedIn) {
-      setShowOptions(true); // Show login/register options for non-logged-in users
+  const handleCreateNewMenu = async () => {
+    if (newMenuName && newMenuDescription && savedRecipe && savedRecipe.id) {
+      try {
+        const newMenu = await actions.auth.createNewMenu({
+          menuName: newMenuName,
+          menuDescription: newMenuDescription,
+          recipes: [savedRecipe.id]
+        });
+        setUserMenus(prevMenus => [...prevMenus, newMenu]);
+        setNewMenuName("");
+        setNewMenuDescription("");
+        setShowCreateMenuForm(false); // Hide the creation form after creating a new menu
+        console.log("New menu created:", newMenu);
+      } catch (error) {
+        console.error("Error creating new menu:", error);
+      }
     } else {
-      // Here you could directly call your save function or set 'showOptions' to true
-      // to display additional options for logged-in users (if applicable)
-      handleSaveRecipe();
+      console.log("Please provide a name and description for the new menu.");
     }
   };
 
-  const handleSaveOptions = () => {
-    if (!isLoggedIn) {
-      navigate('/register', { state: { fromRecipe: true, recipe }}); // Show login/register options for non-logged-in users
-    } else {
-      // For logged-in users, directly proceed to show save options or perform the save action
-      // Optionally toggle showing save options for logged-in users or directly invoke save logic
-      console.log("Implement save recipe logic") // Assuming you have a state to manage this for logged-in users
-    }
+  const handleLoginRedirect = () => {
+    navigate('/login', { state: { from: 'personalizedRecipe', recipe: initialRecipe } });
   };
 
+  const renderSaveOptions = () => {
+    if (!showSaveOptions) return null;
 
-  // Logic to render Save to Menu and Create New Menu options for logged-in users
-  const renderOptions = () => {
-    if (!isLoggedIn) {
-      /*
-      return (
-        <div className="options">
-          <button onClick={() => navigate('/login')} className="metro_btn-custom primary ml-3">Login</button>
-          <button onClick={() => navigate('/register')} className="metro_btn-custom secondary ml-3">Register</button>
-        </div>
-      );*/
-      return null;
-    }
-
-    // Render options for logged-in users
     return (
-      <>
-        <button onClick={() => console.log('Saving recipe...')} className="metro_btn-custom success ml-3">Save Recipe</button>
-        {userMenus.map((menu) => (
-          <button key={menu.menu_id} onClick={() => console.log(`Saving to menu: ${menu.menu_name}`)} className="metro_btn-custom info ml-3">
-            Save to {menu.menu_name}
-          </button>
-        ))}
-        <button onClick={() => console.log('Creating new menu...')} className="metro_btn-custom primary ml-3">Create New Menu</button>
-      </>
+      <div>
+        <button onClick={() => { setShowSaveToMenuOptions(true); setShowCreateMenuForm(false); }} className="metro_btn-custom primary ml-3">Save to Menu</button>
+        <button onClick={() => { setShowCreateMenuForm(true); setShowSaveToMenuOptions(false); }} className="metro_btn-custom primary ml-3">Create New Menu</button>
+      </div>
     );
   };
 
+  const renderSaveToMenuOptions = () => {
+    if (!showSaveToMenuOptions) return null;
+
+    const handleRadioButtonChange = (e) => {
+      console.log(`${e.target.value} clicked`);
+      setSelectedMenuId(e.target.value);
+    };
+
+    return (
+      <form onSubmit={e => e.preventDefault()}>
+        {userMenus.map(menu => (
+          <div key={menu.menu_id} className="mb-3 btn-group-toggle">
+            <label className={`btn btn-danger btn-lg py-3 px-4 mr-3 ${selectedMenuId === menu.menu_id ? 'active' : ''}`}>
+              <input
+                type="radio"
+                name="menuOption"
+                id={menu.menu_id}
+                autoComplete="off"
+                value={menu.menu_id}
+                onChange={handleRadioButtonChange}
+              />
+              {menu.menu_name}
+            </label>
+          </div>
+        ))}
+        <button onClick={() => handleSaveToSelectedMenu()} className="metro_btn-custom primary ml-4">Save</button>
+      </form>
+    );
+  };
+
+
+  const renderCreateMenuForm = () => {
+    if (!showCreateMenuForm) return null;
+
+    return (
+      <div>
+        <div className="mb-3">
+          <input className="form-control" type="text" placeholder="Menu Name" value={newMenuName} onChange={e => setNewMenuName(e.target.value)} />
+        </div>
+        <div className="mb-3">
+          <input className="form-control" type="text" placeholder="Menu Description" value={newMenuDescription} onChange={e => setNewMenuDescription(e.target.value)} />
+        </div>
+        <button onClick={handleCreateNewMenu} className="metro_btn-custom primary ml-4">Create Menu</button> {/* Adjusted class for consistency */}
+      </div>
+    );
+  };
+
+
   const renderMacrosList = () => {
-    if (!recipe.macros) return null;
-    const macroLines = recipe.macros.split('\n');
+    if (!initialRecipe.macros) return null;
+    const macroLines = initialRecipe.macros.split('\n');
     return macroLines.map((line, index) => {
       const [key, value] = line.split(':');
       if (!key || !value) return null; // Check if key or value is undefined
@@ -126,18 +178,18 @@ const PersonalizedRecipe = ({ showBreadcrumb = true }) => {
                 <div className="row">
                   <div className="col-md-4">
                     <div className="metro_post-single-thumb sticky-image">
-                      <img src={recipe.image_url || "assets/img/empty.svg"} alt="Recipe" />
+                      <img src={initialRecipe.image_url || "assets/img/empty.svg"} alt="Recipe" />
                     </div>
                   </div>
                   <div className="col-md-8">
-                    <h2 className="entry-title">{recipe.title || 'Generated Recipe'}</h2>
+                    <h2 className="entry-title">{initialRecipe.title || 'Generated Recipe'}</h2>
                     <div className="entry-content">
                       {/*
                       <span className="metro_post-meta">
                         <a href="#"><i className="far fa-user" /> Mic</a>
                       </span>
                       */}
-                      <p>{recipe.summary || 'A delightful recipe awaits'}</p>
+                      <p>{initialRecipe.summary || 'A delightful recipe awaits'}</p>
                       <div className="row">
                         <div className="col-12">
                           <ul className="nav nav-tabs" id="myTab" role="tablist">
@@ -154,10 +206,10 @@ const PersonalizedRecipe = ({ showBreadcrumb = true }) => {
                           </ul>
                           <div className="tab-content" id="myTabContent">
                             <div className="tab-pane fade show active" id="ingredients" role="tabpanel" aria-labelledby="incredients-tab">
-                              <ul>{renderList(recipe.ingredients)}</ul>
+                              <ul>{renderList(initialRecipe.ingredients)}</ul>
                             </div>
                             <div className="tab-pane fade" id="directions" role="tabpanel" aria-labelledby="directions-tab">
-                              <ul>{renderList(recipe.instructions)}</ul>
+                              <ul>{renderList(initialRecipe.instructions)}</ul>
                             </div>
                           </div>
                         </div>
@@ -167,13 +219,20 @@ const PersonalizedRecipe = ({ showBreadcrumb = true }) => {
                         <ul>{renderMacrosList()}</ul>
                       </div>
                       <div>
-                        <button type="submit" className="metro_btn-custom primary ml-3" name="button" onClick={handleSaveOptions}>
-                          {isLoggedIn ? "Save Recipe" : "Login/Register to Save"}
-                        </button>
-                      </div>
-
-                      <div className="save-recipe-options">
-                      {renderOptions()}
+                        {!showSaveOptions && (
+                          <button type="button" className="metro_btn-custom primary ml-3" onClick={isLoggedIn ? handleSaveRecipe : handleLoginRedirect}>
+                            {isLoggedIn ? "Save Recipe" : "Login/Register to Save"}
+                          </button>
+                        )}
+                        <div className="mb-3"> {/* Add margin-bottom here */}
+                          {renderSaveOptions()}
+                        </div>
+                        <div className="mb-3"> {/* Add margin-bottom here */}
+                          {showSaveToMenuOptions && renderSaveToMenuOptions()}
+                        </div>
+                        <div className="mb-3"> {/* Add margin-bottom here */}
+                          {showCreateMenuForm && renderCreateMenuForm()}
+                        </div>
                       </div>
                     </div>
                   </div>

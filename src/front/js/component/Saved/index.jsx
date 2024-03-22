@@ -2,33 +2,17 @@ import React, { useEffect, useState, useContext } from "react";
 import { Context } from "../../store/appContext.js";
 
 const Saved = (props) => {
-  const [savedRecipes, setSavedRecipes] = useState([])
+  //const [savedRecipes, setSavedRecipes] = useState([])
   const { store, actions } = useContext(Context);
 
   useEffect(() => {
-    const fetchSavedRecipes = async () => {
-      try {
-        const response = await fetch(`${process.env.BACKEND_URL}/user/recipes`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${store.access_token}`,
-          },
-        });
-        if (!response.ok) {
-          throw new Error('Failed to fetch saved recipes');
-        }
-        const data = await response.json();
-        setSavedRecipes(data);
-      } catch (error) {
-        console.error("Error fetching saved recipes:", error);
-      }
-    };
-
     if (store.access_token) {
-      fetchSavedRecipes();
+      actions.auth.fetchUserRecipes();
     }
-  }, [store.access_token, actions]);
+  }, [store.access_token, actions.auth]);
+
+  // Utilizing the state from the store instead of local state
+  const savedRecipes = store.userRecipes || [];
 
   return (
     <>

@@ -97,24 +97,45 @@ const getState = ({ getStore, getActions, setStore }) => {
 
         //actions below are related to menus
         fetchUserMenus: async () => {
-          //const store = getStore();
-          try {
-            const resp = await fetch(`${process.env.BACKEND_URL}/api/user/menus`, {
+          const store = getStore();
+          const actions = getActions();
+
+          // Function to attempt fetching user menus with a given token
+          const attemptFetch = async (accessToken) => {
+            const response = await fetch(`${process.env.BACKEND_URL}/api/user/menus`, {
               method: "GET",
               headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${getStore().access_token}`,
+                "Authorization": `Bearer ${accessToken}`,
               },
             });
-            if (!resp.ok) throw new Error("Failed to fetch user menus.");
-            const menus = await resp.json();
-            setStore({ userMenus: menus });
+            return response;
+          };
 
+          // First attempt with the current access token
+          let response = await attemptFetch(store.access_token);
+
+          // If the first attempt fails due to unauthorized access, try refreshing the token
+          if (response.status === 401) {
+            // Attempt to refresh the access token
+            const refreshedToken = await actions.refreshAccessToken();
+            if (refreshedToken) {
+              // If the token was successfully refreshed, retry the fetch with the new token
+              response = await attemptFetch(refreshedToken);
+            }
+          }
+
+          // After retrying, handle the response
+          if (response.ok) {
+            const menus = await response.json();
+            setStore({ userMenus: menus });
             return menus; // Returning menus to update state in component
-          } catch (error) {
-            console.error("Error fetching user menus:", error);
+          } else {
+            // Handle failure to fetch menus after retrying
+            throw new Error('Failed to fetch user menus after attempting token refresh.');
           }
         },
+
 
         createNewMenu: async ({ menuName, menuDescription, recipes }) => {
           // Assuming you might want to create a menu with this recipe in it
@@ -126,9 +147,9 @@ const getState = ({ getStore, getActions, setStore }) => {
                 "Authorization": `Bearer ${getStore().access_token}`,
               },
               body: JSON.stringify({
-                menuName, // Example static name, consider allowing user input
+                menuName,
                 menuDescription,
-                recipes: recipes.map(recipe => recipe.id) // Assuming the recipe has an ID
+                recipes: recipes.map(recipe => recipe.id)
               }),
             });
             if (!resp.ok) throw new Error("Failed to create new menu.");
@@ -142,52 +163,139 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
         },
 
-        //actions related to recipes
-        saveRecipe: async (recipe) => {
+        addRecipeToMenu: async (menu_id, recipe_id) => {
+          const store = getStore();
           try {
-            const resp = await fetch(`${process.env.BACKEND_URL}/api/recipes/save`, {
-              method: "POST",
+            const response = await fetch(`${process.env.BACKEND_URL}/api/menus/${menu_id}/add_recipe`, {
+              method: 'POST',
               headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${getStore().access_token}`,
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${store.access_token}`, // Assuming access_token is stored in your global state
               },
-              body: JSON.stringify(recipe),
+              body: JSON.stringify({
+                recipe_id: recipe_id,
+              }),
             });
-            if (!resp.ok) throw new Error("Failed to save recipe.");
-            console.log("Recipe saved successfully");
-            // Optionally, update some store state here
+
+            if (!response.ok) {
+              const error = await response.json();
+              throw new Error(error.msg || 'Failed to add recipe to menu');
+            }
+
+            // Assuming you might want to update some state or perform some action upon successful addition
+            console.log("Recipe added to menu successfully");
+            // Optionally, refresh menus or perform any other update necessary
+
           } catch (error) {
-            console.error("Error saving recipe:", error);
+            console.error("Error adding recipe to menu:", error);
           }
         },
 
+        //actions related to recipes
+        saveRecipe: async (recipe) => {
+          const store = getStore();
+          const actions = getActions();
+
+          // Attempt saving the recipe with the current access token
+          let response = await fetch(`${process.env.BACKEND_URL}/api/recipes/save`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${store.access_token}`,
+            },
+            body: JSON.stringify(recipe),
+          });
+
+          // Handle token refresh if necessary
+          if (response.status === 401) {
+            const refreshedToken = await actions.refreshAccessToken();
+            if (refreshedToken) {
+              response = await fetch(`${process.env.BACKEND_URL}/api/recipes/save`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${refreshedToken}`,
+                },
+                body: JSON.stringify(recipe),
+              });
+            }
+          }
+
+          if (response.ok) {
+            const savedRecipe = await response.json();
+            console.log("Full response from save:", savedRecipe); // Debug: Log the full response
+            if (!savedRecipe.recipe_id) {
+              console.error("No recipe_id found in response:", savedRecipe);
+              throw new Error("No recipe_id returned from backend");
+            }
+            return savedRecipe.recipe_id;
+          }
+        },
+
+
         fetchUserRecipes: async () => {
           const store = getStore();
-          if (!store.access_token) return;
+          const actions = getActions();
 
-          try {
+          if (!store.access_token) return;
+          const attemptFetch = async (accessToken) => {
             const response = await fetch(`${process.env.BACKEND_URL}/api/user/recipes`, {
               method: "GET",
               headers: {
-                'Authorization': `Bearer ${store.access_token}`,
+                'Authorization': `Bearer ${accessToken}`,
                 'Content-Type': 'application/json',
               },
             });
-            if (!response.ok) {
-              throw new Error('Failed to fetch user recipes');
+            return response;
+          };
+
+          let response = await attemptFetch(store.access_token);
+
+          if (response.status === 401) {
+            const refreshed = await actions.refreshAccessToken();
+            if (refreshed) {
+              const newAccessToken = getStore().access_token;
+              response = await attemptFetch(newAccessToken);
             }
+          }
+
+          if (response.ok) {
             const recipes = await response.json();
             console.log("Fetched user recipes:", recipes);
-
-            // Update the store with the fetched recipes
             setStore({
               ...store,
               userRecipes: recipes,
             });
-          } catch (error) {
-            console.error("Error fetching user recipes:", error);
+          } else {
+            throw new Error('Failed to fetch user recipes');
           }
         },
+
+        fetchRecipeById: async (recipeId) => {
+          const store = getStore();
+          try {
+            const url = `${process.env.BACKEND_URL}/api/recipes/${recipeId}`;
+            console.log("Fetching recipe from URL:", url); // Log for debugging
+            const response = await fetch(url, {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${store.access_token}`,
+              },
+            });
+
+            if (!response.ok) {
+              throw new Error('Failed to fetch recipe');
+            }
+
+            const recipe = await response.json();
+            console.log("Fetched recipe:", recipe);
+            return recipe;
+          } catch (error) {
+            console.error("Error fetching recipe by ID:", error);
+            throw error; // It's important to throw the error to handle it in the component
+          }
+        },
+
 
         //actions related to user
         fetchUsername: async () => {
@@ -229,6 +337,43 @@ const getState = ({ getStore, getActions, setStore }) => {
           });
         },
 
+        //actions related to preference
+        savePreferences: async (preferences) => {
+          const store = getStore();
+          const actions = getActions();
+
+          // Function to attempt saving preferences with a given token
+          const attemptSave = async (accessToken) => {
+            const response = await fetch(`${process.env.BACKEND_URL}/user/preferences`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${accessToken}`, // Use the current access token
+              },
+              body: JSON.stringify(preferences),
+            });
+            return response;
+          };
+
+          // First attempt with the current access token
+          let response = await attemptSave(store.access_token);
+
+          // If the first attempt fails due to unauthorized access, try refreshing the token
+          if (response.status === 401) {
+            // Attempt to refresh the access token
+            const refreshedToken = await actions.auth.refreshAccessToken();
+            if (refreshedToken) {
+              // If the token was successfully refreshed, retry saving preferences with the new token
+              response = await attemptSave(refreshedToken);
+            }
+          }
+
+          if (response.ok) {
+            console.log("Preferences saved successfully");
+          } else {
+            console.error("Failed to save preferences after attempting token refresh.");
+          }
+        },
 
         // Example action to use the access token for an authenticated request
         getProtectedData: async () => {

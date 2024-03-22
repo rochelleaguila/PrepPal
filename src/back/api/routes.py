@@ -10,7 +10,7 @@ from .openai_api import basic_recipe_generation, parse_generated_recipe, generat
 
 api = Blueprint('api', __name__)
 
-CORS(api)
+#CORS(api)
 
 '''
 Below are all the routes to generating recipes, from basic recipes to more complex ones
@@ -79,7 +79,7 @@ def save_recipe():
     db.session.add(new_recipe)
     db.session.commit()
 
-    return jsonify({"msg": "Recipe saved successfully", "recipe_title": new_recipe.title}), 201
+    return jsonify({"msg": "Recipe saved successfully", "recipe_id": new_recipe.recipe_id}), 201
 
 @api.route('/user/recipes', methods=['GET'])
 @jwt_required()
@@ -91,6 +91,17 @@ def get_user_recipes():
     recipes = Recipe.query.filter_by(user_id=user_id).all()
     return jsonify([recipe.to_dict() for recipe in recipes]), 200
 
+@api.route('/recipes/<int:recipe_id>', methods=['GET'])
+@jwt_required()
+def get_recipe(recipe_id):
+    user_id = get_jwt_identity()
+    recipe = Recipe.query.filter_by(recipe_id=recipe_id, user_id=user_id).first()
+
+    if recipe is None:
+        return jsonify({"msg": "Recipe not found"}), 404
+
+    return jsonify(recipe.to_dict()), 200
+
 
 '''
 Below are all the routes connected to the menu, menus need a user to acces them
@@ -101,15 +112,24 @@ def get_user_menus():
     user_id = get_jwt_identity()
     menus = Menu.query.filter_by(user_id=user_id).all()
     menus_data = []
+
     for menu in menus:
+        recipes_data = []
+        # Access the recipes through the association and append their dict representation
+        for menu_recipe in menu.menu_recipes:
+            recipe = menu_recipe.recipe
+            recipes_data.append(recipe.to_dict())
+
         menu_data = {
             "menu_id": menu.menu_id,
             "menu_name": menu.menu_name,
             "menu_description": menu.menu_description,
-            "recipes": [recipe.to_dict() for recipe in menu.menu_recipes]
+            "recipes": recipes_data
         }
         menus_data.append(menu_data)
+
     return jsonify(menus_data), 200
+
 
 
 @api.route('/menus/<int:menu_id>/add_recipe', methods=['POST'])
@@ -176,17 +196,18 @@ All the routes connected to preferences
 @api.route('/user/preferences', methods=['POST'])
 def save_preferences():
     data = request.json
+    # Create a new Preference instance using the provided JSON data
     new_preference = Preference(
         user_id=data.get('user_id'),
-        diet_style_id=data.get('diet_style_id'),
-        diet_restriction_id=data.get('diet_restriction_id'),
+        diet_style=data.get('diet_style'),
+        diet_restriction=data.get('diet_restriction'),
         serving_size=data.get('serving_size'),
         protein_g=data.get('protein_g'),
         fat_g=data.get('fat_g'),
         carbs_g=data.get('carbs_g'),
         calories=data.get('calories'),
-        cuisine_id=data.get('cuisine_id'),
-        other_info=data.get('other_info')
+        cuisine=data.get('cuisine'),
+        other_info=data.get('other_info')  # Assuming this is already in JSON format or a dict
     )
     db.session.add(new_preference)
     db.session.commit()

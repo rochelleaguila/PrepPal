@@ -25,8 +25,9 @@ class Recipe(db.Model):
     title = db.Column(db.String(255), nullable=False)
     summary = db.Column(db.String(500), nullable=False)
     instructions = db.Column(db.Text, nullable=False)
-    ingredients = db.Column(db.Text, nullable=False)  # Consider adjusting based on your design
-    image_url = db.Column(db.String(255))
+    ingredients = db.Column(db.Text, nullable=False)
+    macros = db.Column(db.JSON, nullable=False)
+    image_url = db.Column(db.Text)
     is_saved = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
     updated_at = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp(), server_onupdate=db.func.current_timestamp())
@@ -99,24 +100,25 @@ class Preference(db.Model):
     __tablename__ = 'preferences'
     preference_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
-    diet_style_id = db.Column(db.Integer, db.ForeignKey('diet_styles.diet_style_id'))
-    diet_restriction_id = db.Column(db.Integer, db.ForeignKey('diet_restrictions.diet_restriction_id'))
+    diet_style = db.Column(db.String(255))
+    diet_restriction = db.Column(db.String(255))
     serving_size = db.Column(db.Integer)
     protein_g = db.Column(db.Numeric(5, 2))
     fat_g = db.Column(db.Numeric(5, 2))
     carbs_g = db.Column(db.Numeric(5, 2))
     calories = db.Column(db.Integer)
-    cuisine_id = db.Column(db.Integer, db.ForeignKey('cuisines.cuisine_id'))
+    cuisine = db.Column(db.String(255))
     other_info = db.Column(db.JSON)  # For MySQL JSON support
     created_at = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
     updated_at = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp(), server_onupdate=db.func.current_timestamp())
 
+    '''
     # Relationships in preferences
     diet_style = db.relationship('DietStyle', backref='preferences')
     diet_restriction = db.relationship('DietRestriction', backref='preferences')
     cuisine = db.relationship('Cuisine', backref='preferences')
 
-'''
+
 class Preference(db.Model):
     __tablename__ = 'preferences'
     preference_id = db.Column(db.Integer, primary_key=True)

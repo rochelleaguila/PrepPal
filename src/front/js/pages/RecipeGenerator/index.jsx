@@ -122,7 +122,6 @@ const RecipeGenerator = () => {
                         autoComplete="off"
                         value="vegan"
                         onChange={handleRadioButtonChange}
-                        onClick={() => console.log('Vegan clicked')}
                       />
                       Vegan
                     </label>
